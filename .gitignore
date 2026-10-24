@@ -1,0 +1,16 @@
+.gradle/
+build/
+**/build/
+local.properties
+*.iml
+.idea/
+.kotlin/
+out/
+*.keystore
+*.jks
+*.asc
+secrets.properties
+innerdisco_cookie.txt
+*.har
+*.pcap
+*.log
