@@ -20,7 +20,7 @@ import kotlin.time.Clock
  * Legacy GitHub-hosted preprocessed-player config fallback.
  *
  * The config provides a validated yt-dlp EJS preprocessed player for known
- * YouTube player hashes. The app still computes each per-stream challenge
+ * Disco player hashes. The app still computes each per-stream challenge
  * locally and falls back to the built-in full player solver on any failure.
  */
 internal class GitHubPlayerConfigClient(

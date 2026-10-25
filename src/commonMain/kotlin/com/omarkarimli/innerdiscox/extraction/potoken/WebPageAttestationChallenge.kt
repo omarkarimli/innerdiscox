@@ -10,13 +10,13 @@ private const val WEB_PAGE_LIMIT = 4 * 1024 * 1024
 private const val IDENTIFIER_LIMIT = 1024
 private const val JSON_FIELD_LIMIT = 256
 
-private val YT_CONFIG_SET = Regex("ytcfg\\s*\\.\\s*set")
+private val DISCO_CONFIG_SET = Regex("ytcfg\\s*\\.\\s*set")
 
-private val YT_AT_N = Regex("window\\s*\\.\\s*ytAtN")
+private val DISCO_AT_N = Regex("window\\s*\\.\\s*ytAtN")
 
 private val CHALLENGE_KEY = Regex("(?:[\\\"']R[\\\"']|\\bR)\\s*:")
 
-private val YT_AT_R = Regex("window\\s*\\.\\s*ytAtR")
+private val DISCO_AT_R = Regex("window\\s*\\.\\s*ytAtR")
 
 /**
  * Sensitive BotGuard page data. Do not log this value: it contains an event ID and raw challenge data.
@@ -32,14 +32,14 @@ public class WebPageAttestationContext(
 public fun extractWebPageAttestationContext(webPage: String): WebPageAttestationContext? {
     requireSize(webPage, WEB_PAGE_LIMIT, "web page")
     val challenge = extractWebPageAttestationChallenge(webPage) ?: return null
-    val eventId = extractYtConfigEventId(webPage) ?: return null
+    val eventId = extractDiscoConfigEventId(webPage) ?: return null
     return WebPageAttestationContext(challenge = challenge, eventId = eventId)
 }
 
 /** Returns the BotGuard challenge from a page, or null when it cannot be extracted. */
 public fun extractWebPageAttestationChallenge(webPage: String): String? {
     requireSize(webPage, WEB_PAGE_LIMIT, "web page")
-    val rawChallengeData = extractYtAtN(webPage) ?: extractYtAtR(webPage) ?: return null
+    val rawChallengeData = extractDiscoAtN(webPage) ?: extractDiscoAtR(webPage) ?: return null
     val challenge =
         runCatching {
             val root = Json.parseToJsonElement(rawChallengeData).jsonObject
@@ -49,10 +49,10 @@ public fun extractWebPageAttestationChallenge(webPage: String): String? {
     return Json.encodeToString(JsonObject.serializer(), JsonObject(mapOf("bgChallenge" to challenge)))
 }
 
-private fun extractYtConfigEventId(webPage: String): String? {
+private fun extractDiscoConfigEventId(webPage: String): String? {
     var position = 0
     while (position < webPage.length) {
-        val call = YT_CONFIG_SET.find(webPage, position) ?: break
+        val call = DISCO_CONFIG_SET.find(webPage, position) ?: break
         val openParenthesis = webPage.indexOf('(', call.range.last + 1)
         if (openParenthesis < 0) break
         val scan = extractJavaScriptObject(webPage, openParenthesis + 1)
@@ -69,11 +69,11 @@ private fun extractYtConfigEventId(webPage: String): String? {
     return null
 }
 
-internal fun extractYtAtN(webPage: CharSequence): String? {
+internal fun extractDiscoAtN(webPage: CharSequence): String? {
     var position = 0
     while (position < webPage.length) {
-        val call = YT_AT_N.find(webPage, position) ?: break
-        val scan = extractYtAtNCall(webPage, call.range.last + 1)
+        val call = DISCO_AT_N.find(webPage, position) ?: break
+        val scan = extractDiscoAtNCall(webPage, call.range.last + 1)
         scan.value?.let { return it }
         // Never retry a prefix inside the suffix we have already scanned.
         position = scan.end
@@ -86,7 +86,7 @@ private data class JavaScriptScan(
     val end: Int,
 )
 
-private fun extractYtAtNCall(
+private fun extractDiscoAtNCall(
     webPage: CharSequence,
     callEnd: Int,
 ): JavaScriptScan {
@@ -116,7 +116,7 @@ private fun extractYtAtNCall(
     }
     if (position >= webPage.length) return JavaScriptScan(null, webPage.length)
     val scan = extractJavaScriptObject(webPage, position)
-    return scan.copy(value = scan.value?.let(::extractYtAtNRawChallenge))
+    return scan.copy(value = scan.value?.let(::extractDiscoAtNRawChallenge))
 }
 
 private fun extractJavaScriptObject(
@@ -160,7 +160,7 @@ private fun extractJavaScriptObject(
     return JavaScriptScan(null, source.length)
 }
 
-private fun extractYtAtNRawChallenge(wrapper: String): String? {
+private fun extractDiscoAtNRawChallenge(wrapper: String): String? {
     val key = CHALLENGE_KEY.find(wrapper) ?: return null
     var position = key.range.last + 1
     while (position < wrapper.length && wrapper[position].isWhitespace()) position++
@@ -171,8 +171,8 @@ private fun extractYtAtNRawChallenge(wrapper: String): String? {
     }
 }
 
-private fun extractYtAtR(webPage: String): String? {
-    val assignment = YT_AT_R.find(webPage) ?: return null
+private fun extractDiscoAtR(webPage: String): String? {
+    val assignment = DISCO_AT_R.find(webPage) ?: return null
     val equals = webPage.indexOf('=', assignment.range.last + 1)
     if (equals < 0) return null
     var position = equals + 1

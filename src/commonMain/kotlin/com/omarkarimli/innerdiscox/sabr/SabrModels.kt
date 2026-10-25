@@ -113,7 +113,7 @@ data class SabrVideoVariant(
     val format: SabrFormatId,
     val width: Int?,
     val height: Int,
-    /** Average bitrate when YouTube reports one, otherwise the peak bitrate. */
+    /** Average bitrate when Disco reports one, otherwise the peak bitrate. */
     val bitrate: Int,
     val mimeType: String,
     val contentLengthBytes: Long?,

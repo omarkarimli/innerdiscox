@@ -17,7 +17,7 @@ internal class ZemerCipherSolver private constructor(
             val engine = QuickJsEngine()
             try {
                 engine.initialize()
-                engine.setupYoutubeGlobals()
+                engine.setupDiscoGlobals()
                 engine.execute("globalThis._yt_player = globalThis._yt_player || {};")
                 engine.execute(buildModifiedPlayerScript(playerCode, config))
 

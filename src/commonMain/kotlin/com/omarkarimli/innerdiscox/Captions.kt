@@ -1,7 +1,7 @@
 package com.omarkarimli.innerdiscox
 
 import com.omarkarimli.innerdiscox.cipher.getTextWithoutRedirects
-import com.omarkarimli.innerdiscox.models.YouTubeClient
+import com.omarkarimli.innerdiscox.models.DiscoClient
 import com.omarkarimli.innerdiscox.models.response.GetTranscriptResponse
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.Url
@@ -25,7 +25,7 @@ public suspend fun HttpResponse.bodyAsJsonObjectLimited(maxBytes: Int): JsonObje
 
 /** Requests and parses transcript cues with bounded response, cue-count, and cue-text allocations. */
 public suspend fun InnerDisco.transcriptCues(
-    client: YouTubeClient,
+    client: DiscoClient,
     videoId: String,
 ): List<TranscriptCue> {
     require(SAFE_VIDEO_ID.matches(videoId)) { "Invalid video ID" }
@@ -63,7 +63,7 @@ public suspend fun InnerDisco.transcriptCues(
     }
 }
 
-/** Fetches a public YouTube caption track without redirects, cookies, or account headers. */
+/** Fetches a public Disco caption track without redirects, cookies, or account headers. */
 public suspend fun InnerDisco.fetchCaptionText(url: String): String {
     val captionUrl = validatedCaptionUrl(url)
     val response = httpClient.getTextWithoutRedirects(captionUrl, MAX_CAPTION_BYTES)
@@ -90,7 +90,7 @@ private fun validatedCaptionUrl(value: String): Url {
             }
         }
     require(url.protocol.name == "https" && url.port == 443 && validEndpoint && url.user == null && url.password == null) {
-        "Caption URL must use an approved YouTube HTTPS endpoint"
+        "Caption URL must use an approved Disco HTTPS endpoint"
     }
     return url
 }

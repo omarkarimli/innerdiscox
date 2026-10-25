@@ -1,7 +1,7 @@
 package com.omarkarimli.innerdiscox.extraction
 
-public interface YtConfigParser {
-    /** Sends login cookies only to the validated YouTube watch/embed page. */
+public interface DiscoConfigParser {
+    /** Sends login cookies only to the validated Disco watch/embed page. */
     public suspend fun fetchConfig(
         videoId: String,
         useLoginCookies: Boolean = false,

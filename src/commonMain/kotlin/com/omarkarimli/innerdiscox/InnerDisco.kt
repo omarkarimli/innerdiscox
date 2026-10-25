@@ -1,8 +1,8 @@
 package com.omarkarimli.innerdiscox
 
 import com.omarkarimli.innerdiscox.models.Context
-import com.omarkarimli.innerdiscox.models.YouTubeClient
-import com.omarkarimli.innerdiscox.models.YouTubeLocale
+import com.omarkarimli.innerdiscox.models.DiscoClient
+import com.omarkarimli.innerdiscox.models.DiscoLocale
 import com.omarkarimli.innerdiscox.models.body.AccountMenuBody
 import com.omarkarimli.innerdiscox.models.body.AccountsListBody
 import com.omarkarimli.innerdiscox.models.body.Action
@@ -144,9 +144,9 @@ class InnerDisco(
 
     /** Immutable request identity. Contains credentials and must not be serialized or logged directly. */
     data class SessionSnapshot(
-        val locale: YouTubeLocale =
+        val locale: DiscoLocale =
             com.omarkarimli.innerdiscox.models
-                .defaultYouTubeLocale(),
+                .defaultDiscoLocale(),
         val visitorData: String? = null,
         val dataSyncId: String? = null,
         val authUser: String = "0",
@@ -190,7 +190,7 @@ class InnerDisco(
     private var visitorDataFlight: VisitorDataFlight? = null
     private val sessionBoundRequests = AtomicReference<List<SessionBoundRequest>>(emptyList())
 
-    var locale: YouTubeLocale
+    var locale: DiscoLocale
         get() = session.load().locale
         set(value) = updateSession { it.copy(locale = value) }
 
@@ -391,17 +391,17 @@ class InnerDisco(
         return "SAPISIDHASH ${currentTime}_$sapisidHash"
     }
 
-    /** SAPISID present so SAPISIDHASH auth can be sent for [YouTubeClient.loginSupported] clients. */
+    /** SAPISID present so SAPISIDHASH auth can be sent for [DiscoClient.loginSupported] clients. */
     fun hasSapCookieAuth(): Boolean = hasSapCookieAuth(session.load())
 
     fun hasSapCookieAuth(session: SessionSnapshot): Boolean = !session.cookie.isNullOrBlank() && !session.sapisid.isNullOrBlank()
 
     private fun HttpRequestBuilder.uploadAuthHeaders(session: SessionSnapshot) {
-        userAgent(YouTubeClient.WEB_REMIX.userAgent)
+        userAgent(DiscoClient.WEB_REMIX.userAgent)
         headers {
             append("X-Goog-Api-Format-Version", "1")
-            append("X-YouTube-Client-Name", YouTubeClient.WEB_REMIX.clientId)
-            append("X-YouTube-Client-Version", YouTubeClient.WEB_REMIX.clientVersion)
+            append("X-Disco-Client-Name", DiscoClient.WEB_REMIX.clientId)
+            append("X-Disco-Client-Version", DiscoClient.WEB_REMIX.clientVersion)
             append("Origin", ORIGIN_MUSIC)
             append("X-Origin", ORIGIN_MUSIC)
             append("Referer", REFERER_MUSIC)
@@ -415,7 +415,7 @@ class InnerDisco(
     }
 
     private fun HttpRequestBuilder.ytClient(
-        client: YouTubeClient,
+        client: DiscoClient,
         session: SessionSnapshot,
         setLogin: Boolean = false,
         visitorData: String? = session.visitorData,
@@ -449,8 +449,8 @@ class InnerDisco(
         contentType(ContentType.Application.Json)
         headers {
             append("X-Goog-Api-Format-Version", "1")
-            append("X-YouTube-Client-Name", client.clientId)
-            append("X-YouTube-Client-Version", client.clientVersion)
+            append("X-Disco-Client-Name", client.clientId)
+            append("X-Disco-Client-Version", client.clientVersion)
             append("Origin", origin)
             append("X-Origin", origin)
             append("Referer", requestReferer)
@@ -612,7 +612,7 @@ class InnerDisco(
 
     /** [setLogin] explicitly opts this call into account auth, independently of the default browse preference. */
     suspend fun browse(
-        client: YouTubeClient,
+        client: DiscoClient,
         browseId: String? = null,
         params: String? = null,
         continuation: String? = null,
@@ -651,7 +651,7 @@ class InnerDisco(
     }
 
     suspend fun player(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
         playlistId: String? = null,
         signatureTimestamp: Int? = null,
@@ -670,11 +670,11 @@ class InnerDisco(
             encryptedHostFlags,
         )
 
-    private fun YouTubeClient.withLanguage(language: String): YouTubeClient =
+    private fun DiscoClient.withLanguage(language: String): DiscoClient =
         if ("{language}" in userAgent) copy(userAgent = userAgent.replace("{language}", language)) else this
 
     private fun buildPlayerBody(
-        client: YouTubeClient,
+        client: DiscoClient,
         context: Context,
         videoId: String,
         signatureTimestamp: Int?,
@@ -707,7 +707,7 @@ class InnerDisco(
         )
 
     internal suspend fun playerWithSession(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
         playlistId: String?,
         signatureTimestamp: Int?,
@@ -784,7 +784,7 @@ class InnerDisco(
         }
 
     suspend fun playerWithSessionBound(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
         playlistId: String?,
         signatureTimestamp: Int?,
@@ -807,7 +807,7 @@ class InnerDisco(
 
     /** The extraction director falls back to another client instead of retrying the same one. */
     internal suspend fun playerWithSessionBound(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
         playlistId: String?,
         signatureTimestamp: Int?,
@@ -836,7 +836,7 @@ class InnerDisco(
      * redirects or retries, so the bearer cannot be propagated to another endpoint.
      */
     internal suspend fun playerWithTvBearerSessionBound(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
         signatureTimestamp: Int?,
         requestSession: SessionSnapshot,
@@ -866,8 +866,8 @@ class InnerDisco(
                         contentType(ContentType.Application.Json)
                         headers {
                             append("X-Goog-Api-Format-Version", "1")
-                            append("X-YouTube-Client-Name", requestClient.clientId)
-                            append("X-YouTube-Client-Version", requestClient.clientVersion)
+                            append("X-Disco-Client-Name", requestClient.clientId)
+                            append("X-Disco-Client-Version", requestClient.clientVersion)
                             append("Origin", ORIGIN_WWW)
                             append("X-Origin", ORIGIN_WWW)
                             append("Referer", REFERER_WWW)
@@ -896,7 +896,7 @@ class InnerDisco(
         }
 
     suspend fun next(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String? = null,
         playlistId: String? = null,
         playlistSetVideoId: String? = null,
@@ -935,7 +935,7 @@ class InnerDisco(
     }
 
     suspend fun registerPlayback(
-        client: YouTubeClient,
+        client: DiscoClient,
         url: String,
         cpn: String,
         playlistId: String? = null,
@@ -955,7 +955,7 @@ class InnerDisco(
         )
 
     suspend fun registerPlaybackWithSession(
-        client: YouTubeClient,
+        client: DiscoClient,
         url: String,
         cpn: String,
         playlistId: String?,
@@ -977,7 +977,7 @@ class InnerDisco(
         )
 
     suspend fun registerWatchtimeWithSession(
-        client: YouTubeClient,
+        client: DiscoClient,
         url: String,
         cpn: String,
         startTimes: String,
@@ -1004,7 +1004,7 @@ class InnerDisco(
 
     private suspend fun registerStatsWithSession(
         operation: String,
-        client: YouTubeClient,
+        client: DiscoClient,
         url: String,
         cpn: String,
         requestSession: SessionSnapshot,
@@ -1025,8 +1025,8 @@ class InnerDisco(
                         userAgent(client.userAgent)
                         headers {
                             append("X-Goog-Api-Format-Version", "1")
-                            append("X-YouTube-Client-Name", client.clientId)
-                            append("X-YouTube-Client-Version", client.clientVersion)
+                            append("X-Disco-Client-Name", client.clientId)
+                            append("X-Disco-Client-Version", client.clientVersion)
                             append("Origin", origin)
                             append("X-Origin", origin)
                             append("Referer", if (client.clientName == "WEB_REMIX") REFERER_MUSIC else REFERER_WWW)
@@ -1079,7 +1079,7 @@ class InnerDisco(
                 url.encodedPath in STATS_PATHS &&
                 !url.hasUserInfo(),
         ) {
-            "Playback statistics URL must use an approved YouTube HTTPS endpoint"
+            "Playback statistics URL must use an approved Disco HTTPS endpoint"
         }
         return url
     }
@@ -1099,7 +1099,7 @@ class InnerDisco(
     }
 
     suspend fun search(
-        client: YouTubeClient,
+        client: DiscoClient,
         query: String? = null,
         params: String? = null,
         continuation: String? = null,
@@ -1141,7 +1141,7 @@ class InnerDisco(
     }
 
     suspend fun getSearchSuggestions(
-        client: YouTubeClient,
+        client: DiscoClient,
         input: String,
         setLogin: Boolean = false,
     ): HttpResponse {
@@ -1168,7 +1168,7 @@ class InnerDisco(
     }
 
     suspend fun feedback(
-        client: YouTubeClient,
+        client: DiscoClient,
         tokens: List<String>,
     ): HttpResponse {
         val requestSession = sessionSnapshot()
@@ -1186,7 +1186,7 @@ class InnerDisco(
     }
 
     suspend fun getQueue(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoIds: List<String>?,
         playlistId: String?,
     ): HttpResponse {
@@ -1221,13 +1221,13 @@ class InnerDisco(
 
     @OptIn(ExperimentalEncodingApi::class)
     suspend fun getTranscript(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
     ): HttpResponse {
         val requestSession = sessionSnapshot()
         return executeRequest(operation = "getTranscript") {
             httpClient.postBounded("https://music.youtube.com/youtubei/v1/get_transcript") {
-                // YouTube Music's public web-client key, not an application credential.
+                // Disco Music's public web-client key, not an application credential.
                 parameter("key", TRANSCRIPT_API_KEY)
                 headers {
                     append("Content-Type", "application/json")
@@ -1245,7 +1245,7 @@ class InnerDisco(
         }
     }
 
-    suspend fun accountMenu(client: YouTubeClient): HttpResponse {
+    suspend fun accountMenu(client: DiscoClient): HttpResponse {
         val requestSession = sessionSnapshot()
         return executeRequest(operation = "accountMenu", requestSession = requestSession, requireSuccess = false) {
             httpClient.postBounded("account/account_menu") {
@@ -1259,7 +1259,7 @@ class InnerDisco(
         }
     }
 
-    suspend fun accountsList(client: YouTubeClient): HttpResponse {
+    suspend fun accountsList(client: DiscoClient): HttpResponse {
         val requestSession = sessionSnapshot()
         return executeRequest(operation = "accountsList", requestSession = requestSession, requireSuccess = false) {
             httpClient.postBounded("account/accounts_list") {
@@ -1359,7 +1359,7 @@ class InnerDisco(
                 (url.encodedPath == "/" || url.encodedPath.startsWith("/upload/")) &&
                 !url.hasUserInfo(),
         ) {
-            "Upload session URL must use the approved YouTube HTTPS endpoint"
+            "Upload session URL must use the approved Disco HTTPS endpoint"
         }
         return url
     }
@@ -1367,12 +1367,12 @@ class InnerDisco(
     private fun Url.hasUserInfo(): Boolean = user != null || password != null
 
     suspend fun likeVideo(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
     ) = likeVideo(client, videoId, sessionSnapshot())
 
     suspend fun likeVideo(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
         requestSession: SessionSnapshot,
     ) = executeMutation("likeVideo", requestSession) { requestSession ->
@@ -1388,12 +1388,12 @@ class InnerDisco(
     }
 
     suspend fun unlikeVideo(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
     ) = unlikeVideo(client, videoId, sessionSnapshot())
 
     suspend fun unlikeVideo(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
         requestSession: SessionSnapshot,
     ) = executeMutation("unlikeVideo", requestSession) { requestSession ->
@@ -1409,12 +1409,12 @@ class InnerDisco(
     }
 
     suspend fun dislikeVideo(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
     ) = dislikeVideo(client, videoId, sessionSnapshot())
 
     suspend fun dislikeVideo(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
         requestSession: SessionSnapshot,
     ) = executeMutation("dislikeVideo", requestSession) { requestSession ->
@@ -1430,7 +1430,7 @@ class InnerDisco(
     }
 
     suspend fun subscribeChannel(
-        client: YouTubeClient,
+        client: DiscoClient,
         channelId: String,
         params: String? = null,
     ) = executeMutation("subscribeChannel") { requestSession ->
@@ -1447,7 +1447,7 @@ class InnerDisco(
     }
 
     suspend fun unsubscribeChannel(
-        client: YouTubeClient,
+        client: DiscoClient,
         channelId: String,
         params: String? = null,
     ) = executeMutation("unsubscribeChannel") { requestSession ->
@@ -1464,7 +1464,7 @@ class InnerDisco(
     }
 
     suspend fun likePlaylist(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
     ) = executeMutation("likePlaylist") { requestSession ->
         httpClient.postBounded("like/like") {
@@ -1479,12 +1479,12 @@ class InnerDisco(
     }
 
     suspend fun unlikePlaylist(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
     ) = unlikePlaylist(client, playlistId, sessionSnapshot())
 
     suspend fun unlikePlaylist(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
         requestSession: SessionSnapshot,
     ) = executeMutation("unlikePlaylist", requestSession) { requestSession ->
@@ -1500,7 +1500,7 @@ class InnerDisco(
     }
 
     suspend fun addToPlaylist(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
         videoId: String,
     ) = executeMutation("addToPlaylist") { requestSession ->
@@ -1517,7 +1517,7 @@ class InnerDisco(
     }
 
     suspend fun addPlaylistToPlaylist(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
         addedPlaylistId: String,
     ) = executeMutation("addPlaylistToPlaylist") { requestSession ->
@@ -1534,7 +1534,7 @@ class InnerDisco(
     }
 
     suspend fun movePlaylistSong(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
         setVideoId: String,
         successorSetVideoId: String?,
@@ -1552,7 +1552,7 @@ class InnerDisco(
     }
 
     suspend fun removePlaylistSong(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
         setVideoId: String,
         videoId: String,
@@ -1570,7 +1570,7 @@ class InnerDisco(
     }
 
     suspend fun removePlaylistSongs(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
         songs: List<Pair<String, String>>,
     ) = executeMutation("removePlaylistSongs") { requestSession ->
@@ -1587,7 +1587,7 @@ class InnerDisco(
     }
 
     suspend fun createPlaylist(
-        client: YouTubeClient,
+        client: DiscoClient,
         title: String,
     ) = executeMutation("createPlaylist") { requestSession ->
         httpClient.postBounded("playlist/create") {
@@ -1603,7 +1603,7 @@ class InnerDisco(
     }
 
     suspend fun renamePlaylist(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
         title: String,
     ) = executeMutation("renamePlaylist") { requestSession ->
@@ -1620,7 +1620,7 @@ class InnerDisco(
     }
 
     suspend fun setPlaylistDescription(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
         description: String,
     ) = executeMutation("setPlaylistDescription") { requestSession ->
@@ -1637,7 +1637,7 @@ class InnerDisco(
     }
 
     suspend fun setPlaylistThumbnail(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
         image: ByteArray,
     ): HttpResponse {
@@ -1697,7 +1697,7 @@ class InnerDisco(
     }
 
     suspend fun removePlaylistThumbnail(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
     ) = executeMutation("removePlaylistThumbnail") { requestSession ->
         httpClient.postBounded("browse/edit_playlist") {
@@ -1713,12 +1713,12 @@ class InnerDisco(
     }
 
     suspend fun deletePlaylist(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
     ) = deletePlaylist(client, playlistId, sessionSnapshot())
 
     suspend fun deletePlaylist(
-        client: YouTubeClient,
+        client: DiscoClient,
         playlistId: String,
         requestSession: SessionSnapshot,
     ) = executeMutation("deletePlaylist", requestSession) { requestSession ->
@@ -1739,7 +1739,7 @@ class InnerDisco(
     }
 
     suspend fun deletePrivatelyOwnedEntity(
-        client: YouTubeClient,
+        client: DiscoClient,
         entityId: String,
     ) = executeMutation("deletePrivatelyOwnedEntity") { requestSession ->
         httpClient.postBounded("music/delete_privately_owned_entity") {
@@ -1808,7 +1808,7 @@ class InnerDisco(
                     val response =
                         executeRequest(operation = "fetchFreshVisitorData", retryTransientFailures = false, requireSuccess = false) {
                             httpClient.getBounded(VISITOR_DATA_URL) {
-                                header("User-Agent", YouTubeClient.USER_AGENT_WEB)
+                                header("User-Agent", DiscoClient.USER_AGENT_WEB)
                                 header(HttpHeaders.Accept, "application/json,text/plain,*/*")
                                 header(
                                     HttpHeaders.AcceptLanguage,
@@ -1851,7 +1851,7 @@ class InnerDisco(
         val response =
             executeRequest(operation = "fetchFreshVisitorData", requireSuccess = false, maxAttempts = 2) {
                 httpClient.getBounded(ORIGIN_MUSIC) {
-                    header("User-Agent", YouTubeClient.USER_AGENT_WEB)
+                    header("User-Agent", DiscoClient.USER_AGENT_WEB)
                     header(HttpHeaders.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
                     header(
                         HttpHeaders.AcceptLanguage,

@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 
 /**
  * Wrapper around the QuickJS engine for executing JavaScript code.
- * This is used to run the YouTube player cipher deobfuscation logic.
+ * This is used to run the Disco player cipher deobfuscation logic.
  *
  * Based on yt-dlp's QuickJS integration approach.
  */
@@ -194,10 +194,10 @@ internal class QuickJsEngine {
     }
 
     /**
-     * Set up the global environment for YouTube player execution.
+     * Set up the global environment for Disco player execution.
      * This creates necessary globals like XMLHttpRequest, URL, location, etc.
      */
-    suspend fun setupYoutubeGlobals() {
+    suspend fun setupDiscoGlobals() {
         val setupCode =
             """
             if (typeof globalThis.XMLHttpRequest === "undefined") {

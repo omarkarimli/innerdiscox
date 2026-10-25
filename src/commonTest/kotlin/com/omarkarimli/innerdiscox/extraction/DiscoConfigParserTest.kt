@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 
-class YtConfigParserTest {
+class DiscoConfigParserTest {
     @Test
     fun extractsConfigFieldsAndRejectsUnsafePlayerUrls() {
         val parser = parser()
@@ -61,7 +61,7 @@ class YtConfigParserTest {
                         )
                     },
                 )
-            val config = YtConfigParserImpl(client, InnerDisco(client)).fetchEmbeddedConfig("video")
+            val config = DiscoConfigParserImpl(client, InnerDisco(client)).fetchEmbeddedConfig("video")
             assertEquals("flags", config.encryptedHostFlags)
             assertEquals(20668, config.signatureTimestamp)
             client.close()
@@ -82,7 +82,7 @@ class YtConfigParserTest {
                 )
             val innerDisco = InnerDisco(client).also { it.cookie = "SAPISID=session; PREF=app=m; SID=other" }
 
-            YtConfigParserImpl(client, innerDisco).fetchConfig("video", useLoginCookies = true)
+            DiscoConfigParserImpl(client, innerDisco).fetchConfig("video", useLoginCookies = true)
 
             client.close()
         }
@@ -111,7 +111,7 @@ class YtConfigParserTest {
                 )
             val innerDisco = InnerDisco(client).also { it.cookie = "SAPISID=session" }
 
-            val config = YtConfigParserImpl(client, innerDisco).fetchConfig("video", useLoginCookies = true)
+            val config = DiscoConfigParserImpl(client, innerDisco).fetchConfig("video", useLoginCookies = true)
 
             assertEquals("https://www.youtube.com/s/player/anonymous/base.js", config.playerUrl)
             assertEquals(listOf("SAPISID=session", null), cookies)
@@ -119,7 +119,7 @@ class YtConfigParserTest {
         }
 
     @Test
-    fun followsApprovedYouTubeRedirects() =
+    fun followsApprovedDiscoRedirects() =
         runBlocking {
             val requestedHosts = mutableListOf<String>()
             val cookie = "SAPISID=session"
@@ -144,7 +144,7 @@ class YtConfigParserTest {
                 )
             val innerDisco = InnerDisco(client).also { it.cookie = cookie }
 
-            val config = YtConfigParserImpl(client, innerDisco).fetchConfig("video", useLoginCookies = true)
+            val config = DiscoConfigParserImpl(client, innerDisco).fetchConfig("video", useLoginCookies = true)
 
             assertEquals("https://www.youtube.com/s/player/mobile/base.js", config.playerUrl)
             assertEquals(listOf("www.youtube.com", "m.youtube.com"), requestedHosts)
@@ -152,7 +152,7 @@ class YtConfigParserTest {
         }
 
     @Test
-    fun rejectsRedirectsOutsideApprovedYouTubeEndpoints() =
+    fun rejectsRedirectsOutsideApprovedDiscoEndpoints() =
         runBlocking {
             listOf(
                 "https://example.com/watch?v=video",
@@ -168,7 +168,7 @@ class YtConfigParserTest {
                     )
 
                 assertFailsWith<IllegalStateException> {
-                    YtConfigParserImpl(client, InnerDisco(client)).fetchConfig("video")
+                    DiscoConfigParserImpl(client, InnerDisco(client)).fetchConfig("video")
                 }
                 assertEquals(1, requestCount)
                 client.close()
@@ -188,7 +188,7 @@ class YtConfigParserTest {
             assertFailsWith<TimeoutCancellationException> {
                 withTimeout(
                     25,
-                ) { YtConfigParserImpl(client, InnerDisco(client)).fetchConfig("video") }
+                ) { DiscoConfigParserImpl(client, InnerDisco(client)).fetchConfig("video") }
             }
             client.close()
         }
@@ -212,7 +212,7 @@ class YtConfigParserTest {
                     },
                 )
 
-            val config = withTimeout(5_000) { YtConfigParserImpl(client, InnerDisco(client)).fetchConfig("video") }
+            val config = withTimeout(5_000) { DiscoConfigParserImpl(client, InnerDisco(client)).fetchConfig("video") }
 
             assertEquals("https://www.youtube.com/s/player/abc123/base.js", config.playerUrl)
             assertEquals(20668, config.signatureTimestamp)
@@ -235,11 +235,11 @@ class YtConfigParserTest {
                 )
 
             assertFailsWith<IllegalStateException> {
-                YtConfigParserImpl(client, InnerDisco(client)).fetchConfig("video")
+                DiscoConfigParserImpl(client, InnerDisco(client)).fetchConfig("video")
             }
             client.close()
         }
 
     private fun parser() =
-        YtConfigParserImpl(HttpClient(MockEngine { respond("{}") }), InnerDisco(HttpClient(MockEngine { respond("{}") })))
+        DiscoConfigParserImpl(HttpClient(MockEngine { respond("{}") }), InnerDisco(HttpClient(MockEngine { respond("{}") })))
 }

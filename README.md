@@ -5,7 +5,7 @@
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
 
 InnerDiscoX is an extended Android, JVM, and iOS Kotlin Multiplatform client for
-YouTube's InnerDisco APIs. It retains standard browse, search, account,
+Disco's InnerDisco APIs. It retains standard browse, search, account,
 playlist, and player operations while adding:
 
 - SABR/UMP audio and video streaming with seekable segmented sources.
@@ -38,7 +38,7 @@ val client = InnerDisco(
     httpClient = HttpClient(OkHttp),
 )
 
-val response = client.search(YouTubeClient.WEB, query = "query").body<SearchResponse>()
+val response = client.search(DiscoClient.WEB, query = "query").body<SearchResponse>()
 client.close()
 ```
 
@@ -58,9 +58,9 @@ val configStore = RemotePlayerConfigStore(
     httpClient = client.httpClient,
     repository = PlayerConfigRepository.disabled(),
 )
-val cipher = YouTubeCipherService(client.httpClient, configStore)
+val cipher = DiscoCipherService(client.httpClient, configStore)
 val extractor = InnerDiscoExtractor(
-    configParser = YtConfigParserImpl(client.httpClient, client, configStore, cipherService = cipher),
+    configParser = DiscoConfigParserImpl(client.httpClient, client, configStore, cipherService = cipher),
     cipherService = cipher,
     innerDisco = client,
 )
@@ -136,14 +136,14 @@ and [`RELEASING.md`](RELEASING.md).
 
 ## Status
 
-InnerDiscoX uses experimental `0.x` versioning. YouTube can change private APIs,
+InnerDiscoX uses experimental `0.x` versioning. Disco can change private APIs,
 player scripts, and SABR behavior without notice, so pin exact versions and
 review [`CHANGELOG.md`](CHANGELOG.md) before upgrading.
 
 ## Disclaimer
 
 InnerDiscoX is an independent open-source project. It is not affiliated with,
-endorsed by, or sponsored by YouTube or Google. YouTube and Google are
+endorsed by, or sponsored by Disco or Google. Disco and Google are
 trademarks of their respective owners. Users are responsible for complying
 with applicable terms of service and law.
 

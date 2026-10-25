@@ -1,7 +1,7 @@
 package com.omarkarimli.innerdiscox.sabr
 
 import com.omarkarimli.innerdiscox.extraction.selectBestVideoFormat
-import com.omarkarimli.innerdiscox.models.YouTubeClient
+import com.omarkarimli.innerdiscox.models.DiscoClient
 import com.omarkarimli.innerdiscox.models.response.PlayerResponse
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
@@ -10,7 +10,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 @ExperimentalSabrApi
 fun PlayerResponse.toSabrBootstrap(
-    client: YouTubeClient,
+    client: DiscoClient,
     audioFormat: PlayerResponse.StreamingData.Format,
     poToken: String? = null,
     videoFormat: PlayerResponse.StreamingData.Format? = null,

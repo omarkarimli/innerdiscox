@@ -1,7 +1,7 @@
 package com.omarkarimli.innerdiscox.extraction.strategy
 
 import com.omarkarimli.innerdiscox.extraction.ContentHints
-import com.omarkarimli.innerdiscox.models.YouTubeClient
+import com.omarkarimli.innerdiscox.models.DiscoClient
 
 enum class PlaybackTransportPreference {
     AUTO,
@@ -23,7 +23,7 @@ data class ClientSelectionRequest(
 )
 
 data class SelectedClient(
-    val client: YouTubeClient,
+    val client: DiscoClient,
     val manifest: PlaybackClientManifest? = null,
     val score: Int = 0,
     val reasons: List<String> = emptyList(),
@@ -40,7 +40,7 @@ data class ClientSelectionResult(
 )
 
 interface ClientFallbackStrategy {
-    fun resolveClients(hints: ContentHints): List<YouTubeClient>
+    fun resolveClients(hints: ContentHints): List<DiscoClient>
 
     fun selectClients(request: ClientSelectionRequest): ClientSelectionResult =
         ClientSelectionResult(resolveClients(request.hints).map(::SelectedClient))

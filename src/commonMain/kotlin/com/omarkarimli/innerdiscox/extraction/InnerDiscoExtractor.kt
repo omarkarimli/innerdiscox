@@ -2,14 +2,14 @@ package com.omarkarimli.innerdiscox.extraction
 
 import com.omarkarimli.innerdiscox.InnerDisco
 import com.omarkarimli.innerdiscox.InnerDiscoLogger
-import com.omarkarimli.innerdiscox.cipher.YouTubeCipherService
+import com.omarkarimli.innerdiscox.cipher.DiscoCipherService
 import com.omarkarimli.innerdiscox.d
 import com.omarkarimli.innerdiscox.extraction.strategy.ClientFallbackStrategy
 import com.omarkarimli.innerdiscox.extraction.strategy.ClientHealthMonitor
 import com.omarkarimli.innerdiscox.extraction.strategy.ContentAwareFallbackStrategy
 import com.omarkarimli.innerdiscox.extraction.strategy.PlaybackClientCatalog
 import com.omarkarimli.innerdiscox.i
-import com.omarkarimli.innerdiscox.models.YouTubeLocale
+import com.omarkarimli.innerdiscox.models.DiscoLocale
 import com.omarkarimli.innerdiscox.models.response.PlayerResponse
 import com.omarkarimli.innerdiscox.models.response.PlayerResponse.StreamingData
 import com.omarkarimli.innerdiscox.models.response.PlayerResponse.StreamingData.Format
@@ -34,7 +34,7 @@ import kotlin.time.Instant
 
 @OptIn(ExperimentalSabrApi::class)
 class InnerDiscoExtractor internal constructor(
-    private val configParser: YtConfigParser,
+    private val configParser: DiscoConfigParser,
     private val clientDirector: PlayerClientDirector,
     private val cipherService: ExtractionCipherService,
     private val innerDisco: InnerDisco,
@@ -44,8 +44,8 @@ class InnerDiscoExtractor internal constructor(
     private val now: () -> Instant = { Clock.System.now() },
 ) : StreamExtractor {
     constructor(
-        configParser: YtConfigParser,
-        /** Usually a [YouTubeCipherService]; hosts may isolate cipher solving behind their own implementation. */
+        configParser: DiscoConfigParser,
+        /** Usually a [DiscoCipherService]; hosts may isolate cipher solving behind their own implementation. */
         cipherService: ExtractionCipherService,
         innerDisco: InnerDisco,
         /** Defaults to a [ContentAwareFallbackStrategy] that scores clients with [clientHealthMonitor]. */
@@ -97,7 +97,7 @@ class InnerDiscoExtractor internal constructor(
 
     /** The only session fields a watch or embed page request depends on. */
     private data class ConfigIdentity(
-        val locale: YouTubeLocale,
+        val locale: DiscoLocale,
         val cookieFingerprint: String?,
     )
 
@@ -382,7 +382,7 @@ class InnerDiscoExtractor internal constructor(
         } catch (e: Exception) {
             throw StreamResolveException(
                 reason = StreamResolveException.Reason.NETWORK,
-                message = "Unable to fetch stream data from YouTube.",
+                message = "Unable to fetch stream data from Disco.",
                 cause = e,
                 diagnostics = diagnostics.snapshot(),
             )
@@ -659,7 +659,7 @@ class InnerDiscoExtractor internal constructor(
             diagnostics.requestFailures.lastOrNull()?.let { failure ->
                 throw StreamResolveException(
                     reason = StreamResolveException.Reason.NETWORK,
-                    message = "Unable to fetch stream data from YouTube.",
+                    message = "Unable to fetch stream data from Disco.",
                     cause = failure,
                     diagnostics = diagnostics.snapshot(),
                 )

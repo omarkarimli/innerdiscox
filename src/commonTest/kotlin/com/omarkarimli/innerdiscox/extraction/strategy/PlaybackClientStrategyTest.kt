@@ -1,7 +1,7 @@
 package com.omarkarimli.innerdiscox.extraction.strategy
 
 import com.omarkarimli.innerdiscox.extraction.ContentHints
-import com.omarkarimli.innerdiscox.models.YouTubeClient
+import com.omarkarimli.innerdiscox.models.DiscoClient
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -171,7 +171,7 @@ class PlaybackClientStrategyTest {
 
         assertEquals("WEB_EMBEDDED_PLAYER", candidates.first().manifest?.id)
         assertTrue(candidates.none { it.manifest?.id == "VISIONOS_0_1" })
-        assertTrue(strategy.resolveClients(ContentHints()).none { it == YouTubeClient.VISIONOS_0_1 })
+        assertTrue(strategy.resolveClients(ContentHints()).none { it == DiscoClient.VISIONOS_0_1 })
         assertTrue(PlaybackClientCatalog.automaticManifests.none { it.id == "VISIONOS_0_1" })
     }
 

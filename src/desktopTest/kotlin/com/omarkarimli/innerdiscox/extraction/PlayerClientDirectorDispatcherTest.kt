@@ -3,7 +3,7 @@ package com.omarkarimli.innerdiscox.extraction
 import com.omarkarimli.innerdiscox.InnerDisco
 import com.omarkarimli.innerdiscox.InnerDiscoLogger
 import com.omarkarimli.innerdiscox.extraction.strategy.ClientFallbackStrategy
-import com.omarkarimli.innerdiscox.models.YouTubeClient
+import com.omarkarimli.innerdiscox.models.DiscoClient
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -38,7 +38,7 @@ class PlayerClientDirectorDispatcherTest {
                     PlayerClientDirector(
                         InnerDisco(client, retryDelay = {}),
                         object : ClientFallbackStrategy {
-                            override fun resolveClients(hints: ContentHints) = listOf(YouTubeClient.VISIONOS)
+                            override fun resolveClients(hints: ContentHints) = listOf(DiscoClient.VISIONOS)
                         },
                         object : TokenProvider {
                             override suspend fun getPoToken(

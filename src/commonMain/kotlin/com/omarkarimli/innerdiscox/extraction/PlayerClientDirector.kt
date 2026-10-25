@@ -16,8 +16,8 @@ import com.omarkarimli.innerdiscox.extraction.strategy.PoTokenRequirement
 import com.omarkarimli.innerdiscox.extraction.strategy.PoTokenRule
 import com.omarkarimli.innerdiscox.extraction.strategy.SelectedClient
 import com.omarkarimli.innerdiscox.i
+import com.omarkarimli.innerdiscox.models.DiscoClient
 import com.omarkarimli.innerdiscox.models.PoTokenBinding
-import com.omarkarimli.innerdiscox.models.YouTubeClient
 import com.omarkarimli.innerdiscox.models.response.PlayerResponse
 import com.omarkarimli.innerdiscox.w
 import kotlinx.coroutines.CancellationException
@@ -240,7 +240,7 @@ internal class PlayerClientDirector(
                             untokenizedProfileFailed ||
                             (
                                 forceTokenizedTvHtml5 &&
-                                    client.clientName == YouTubeClient.TVHTML5.clientName
+                                    client.clientName == DiscoClient.TVHTML5.clientName
                             ),
                     requestSession = requestSession,
                     requestBudget = effectiveRequestBudget,
@@ -251,7 +251,7 @@ internal class PlayerClientDirector(
             selectedClient.manifest
                 ?.id
                 ?.takeUnless {
-                    client == YouTubeClient.VISIONOS_0_1 && requestVisitorData.isNullOrBlank()
+                    client == DiscoClient.VISIONOS_0_1 && requestVisitorData.isNullOrBlank()
                 }?.let { manifestId ->
                     // Later extraction passes can replay the same outcome; report each one once.
                     when {
@@ -347,7 +347,7 @@ internal class PlayerClientDirector(
                                 (!wantVideo || hasPlaybackReadyDirectVideoUrl(attempt.response))
                         )
                 if (yieldsDirect) {
-                    // For video, prefer a poToken client over a direct non-poToken one: YouTube 403s
+                    // For video, prefer a poToken client over a direct non-poToken one: Disco 403s
                     // direct video URLs without a poToken, attached by the extractor after cipher resolution.
                     val preferDirect = !wantVideo || attempt.usedPoToken || playableResults.none { it.usedPoToken }
                     if (preferDirect) {
@@ -419,7 +419,7 @@ internal class PlayerClientDirector(
                             put("failurePresent", (attemptResult.failure != null).toString())
                         },
                 )
-                if (client == YouTubeClient.ANDROID_VR_1_43_32 &&
+                if (client == DiscoClient.ANDROID_VR_1_43_32 &&
                     attemptResult.failure?.status == "UNPLAYABLE"
                 ) {
                     forceTokenizedTvHtml5 = true
@@ -547,7 +547,7 @@ internal class PlayerClientDirector(
     }
 
     private suspend fun tryTvBearerPlayer(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
         playerConfig: PlayerConfig,
         requestSession: InnerDisco.SessionSnapshot,
@@ -829,7 +829,7 @@ internal class PlayerClientDirector(
     }
 
     private suspend fun requestPlayer(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
         signatureTimestamp: Int?,
         poToken: String?,
@@ -878,7 +878,7 @@ internal class PlayerClientDirector(
     }
 
     private suspend fun requestPlayerWithoutTimeout(
-        client: YouTubeClient,
+        client: DiscoClient,
         videoId: String,
         signatureTimestamp: Int?,
         poToken: String?,
@@ -920,7 +920,7 @@ internal class PlayerClientDirector(
     private fun parsePlayerResponse(
         payload: String,
         videoId: String,
-        client: YouTubeClient,
+        client: DiscoClient,
         startTime: Long,
         bearerAuthenticated: Boolean = false,
     ): PlayerResponse? {
@@ -1055,7 +1055,7 @@ internal class PlayerClientDirector(
 
     private fun isPlayable(
         response: PlayerResponse,
-        client: YouTubeClient,
+        client: DiscoClient,
     ): Boolean =
         (response.playabilityStatus.status == "OK" || client.skipPlayerResponseValidation) &&
             if (client.useSabr) {
@@ -1203,7 +1203,7 @@ internal class PlayerClientDirector(
             PoTokenBinding.VISITOR_DATA -> playerRequestToken
         }
 
-    private fun YouTubeClient.legacyProfileId(usedPoToken: Boolean): String {
+    private fun DiscoClient.legacyProfileId(usedPoToken: Boolean): String {
         val base =
             buildString {
                 append(clientName)
@@ -1286,7 +1286,7 @@ internal class PlayerClientDirector(
 
 /** Every input that can change a non-bearer player response. */
 internal data class PlayerRequestKey(
-    val client: YouTubeClient,
+    val client: DiscoClient,
     val videoId: String,
     val signatureTimestamp: Int?,
     val poToken: String?,

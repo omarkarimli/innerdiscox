@@ -1,8 +1,8 @@
 package com.omarkarimli.innerdiscox.harness
 
+import com.omarkarimli.innerdiscox.extraction.DiscoConfigParser
 import com.omarkarimli.innerdiscox.extraction.ExtractedStream
 import com.omarkarimli.innerdiscox.extraction.PlayerConfig
-import com.omarkarimli.innerdiscox.extraction.YtConfigParser
 import com.omarkarimli.innerdiscox.sabr.SabrChunk
 import com.sun.net.httpserver.HttpServer
 import io.ktor.client.HttpClient
@@ -320,11 +320,11 @@ class HarnessTest {
                 val tube = com.omarkarimli.innerdiscox.InnerDisco(http)
                 val cipher =
                     com.omarkarimli.innerdiscox.cipher
-                        .YouTubeCipherService(http)
+                        .DiscoCipherService(http)
                 try {
                     val extractor =
                         com.omarkarimli.innerdiscox.extraction.InnerDiscoExtractor(
-                            object : YtConfigParser {
+                            object : DiscoConfigParser {
                                 override suspend fun fetchConfig(
                                     videoId: String,
                                     useLoginCookies: Boolean,
@@ -363,7 +363,7 @@ class HarnessTest {
             }
         }
 
-    @Test fun youtubeMediaHosts() {
+    @Test fun discoMediaHosts() {
         assertTrue(allowedMedia("https://a.googlevideo.com/videoplayback"))
         assertTrue(allowedMedia("https://youtube.com/videoplayback"))
         assertTrue(allowedMedia("https://www.youtube.com/videoplayback"))

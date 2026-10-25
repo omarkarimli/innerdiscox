@@ -1,8 +1,8 @@
 package com.omarkarimli.innerdiscox.extraction.strategy
 
 import com.omarkarimli.innerdiscox.extraction.ContentHints
+import com.omarkarimli.innerdiscox.models.DiscoClient
 import com.omarkarimli.innerdiscox.models.PoTokenBinding
-import com.omarkarimli.innerdiscox.models.YouTubeClient
 
 enum class ClientLifecycle {
     STABLE,
@@ -122,7 +122,7 @@ data class ClientRequestCapabilities(
 data class PlaybackClientManifest(
     val id: String,
     val displayName: String,
-    val client: YouTubeClient,
+    val client: DiscoClient,
     val lifecycle: ClientLifecycle,
     val selectionMode: ClientSelectionMode,
     val authentication: AuthenticationPolicy,

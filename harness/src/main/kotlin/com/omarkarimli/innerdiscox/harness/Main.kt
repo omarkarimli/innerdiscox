@@ -3,13 +3,13 @@ package com.omarkarimli.innerdiscox.harness
 import com.omarkarimli.innerdiscox.InnerDisco
 import com.omarkarimli.innerdiscox.InnerDiscoLogEvent
 import com.omarkarimli.innerdiscox.InnerDiscoLogger
-import com.omarkarimli.innerdiscox.cipher.YouTubeCipherService
+import com.omarkarimli.innerdiscox.cipher.DiscoCipherService
 import com.omarkarimli.innerdiscox.extraction.AudioQuality
 import com.omarkarimli.innerdiscox.extraction.ContentHints
+import com.omarkarimli.innerdiscox.extraction.DiscoConfigParserImpl
 import com.omarkarimli.innerdiscox.extraction.InnerDiscoExtractor
 import com.omarkarimli.innerdiscox.extraction.StreamResolveException
 import com.omarkarimli.innerdiscox.extraction.TokenProviderCapabilities
-import com.omarkarimli.innerdiscox.extraction.YtConfigParserImpl
 import com.omarkarimli.innerdiscox.extraction.strategy.PlaybackClientCatalog
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -436,7 +436,7 @@ fun main(args: Array<String>) {
                             }
                         client(selectedProxy, capture).use { http ->
                             val tube = InnerDisco(http, logger = logger)
-                            val cipher = YouTubeCipherService(http, logger = logger)
+                            val cipher = DiscoCipherService(http, logger = logger)
                             val tokens =
                                 if (tokenMode == "browser") {
                                     HarnessTokenProvider(http, selectedProxy, browserExecutable) { archiveEvent(events, it) }
@@ -447,7 +447,7 @@ fun main(args: Array<String>) {
                                 tube.cookie = cookie
                                 val extractor =
                                     InnerDiscoExtractor(
-                                        YtConfigParserImpl(http, tube, logger = logger, cipherService = cipher),
+                                        DiscoConfigParserImpl(http, tube, logger = logger, cipherService = cipher),
                                         cipher,
                                         tube,
                                         tokenProvider = tokens,

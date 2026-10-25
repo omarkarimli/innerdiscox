@@ -58,8 +58,8 @@ internal class EjsChallengeSolver(
         private const val MAX_PAYLOAD_LENGTH = 10 * 1024 * 1024
         private const val MAX_RAW_OUTPUT_LENGTH = 10 * 1024 * 1024
         private const val MAX_SOLVER_OUTPUT_LENGTH = 256 * 1024
-        private val solverLib by lazy { readYtEjsSolverScript("yt.solver.lib.min.js") }
-        private val solverCore by lazy { readYtEjsSolverScript("yt.solver.core.min.js") }
+        private val solverLib by lazy { readDiscoEjsSolverScript("disco.solver.lib.min.js") }
+        private val solverCore by lazy { readDiscoEjsSolverScript("disco.solver.core.min.js") }
         private val solverBundleHash by lazy { sha1(solverLib + solverCore) }
         private val payloadJson = Json { encodeDefaults = false }
     }
@@ -173,7 +173,7 @@ internal class EjsChallengeSolver(
         try {
             val startMs = Clock.System.now().toEpochMilliseconds()
             engine.initialize()
-            engine.setupYoutubeGlobals()
+            engine.setupDiscoGlobals()
             ensureBundleHash()
             engine.execute(solverLib)
             engine.execute("Object.assign(globalThis, lib);")

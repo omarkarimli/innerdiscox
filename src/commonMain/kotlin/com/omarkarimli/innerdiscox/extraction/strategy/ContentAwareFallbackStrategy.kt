@@ -2,7 +2,7 @@ package com.omarkarimli.innerdiscox.extraction.strategy
 
 import com.omarkarimli.innerdiscox.extraction.ContentHints
 import com.omarkarimli.innerdiscox.extraction.requiresBoundedMediaRange
-import com.omarkarimli.innerdiscox.models.YouTubeClient
+import com.omarkarimli.innerdiscox.models.DiscoClient
 
 class ContentAwareFallbackStrategy(
     private val healthMonitor: ClientHealthMonitor = ClientHealthMonitor.NONE,
@@ -12,7 +12,7 @@ class ContentAwareFallbackStrategy(
      * Resolves only clients that are usable with conservative, signed-out runtime capabilities.
      * Call [selectClients] when authentication, token providers, or platform runtimes are available.
      */
-    override fun resolveClients(hints: ContentHints): List<YouTubeClient> =
+    override fun resolveClients(hints: ContentHints): List<DiscoClient> =
         selectClients(
             ClientSelectionRequest(
                 hints = hints,
@@ -131,7 +131,7 @@ class ContentAwareFallbackStrategy(
         )
     }
 
-    private val kidsClients = setOf(YouTubeClient.ANDROID_KIDS, YouTubeClient.WEB_KIDS)
+    private val kidsClients = setOf(DiscoClient.ANDROID_KIDS, DiscoClient.WEB_KIDS)
 
     private fun hardRejectionReasons(
         manifest: PlaybackClientManifest,

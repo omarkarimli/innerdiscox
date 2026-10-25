@@ -1,7 +1,7 @@
 package com.omarkarimli.innerdiscox.cipher
 
 /**
- * Parser for extracting cipher functions from YouTube player JavaScript.
+ * Parser for extracting cipher functions from Disco player JavaScript.
  *
  * Extract split/join transforms only when a direct parameter setter identifies their role.
  * Unknown or ambiguous call-site shapes are left to the other solvers.

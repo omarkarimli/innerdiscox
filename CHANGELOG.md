@@ -38,7 +38,7 @@ that `0.x` releases may contain breaking API changes.
   - Streams missing their opening segment are rejected.
   - Header, object and control-field sizes are bounded.
   - Fractional tick overflow is detected.
-- The URL parser accepts `m.youtube.com`.
+- The URL parser accepts `m.disco.com`.
 
 ### Changed
 
@@ -105,7 +105,7 @@ that `0.x` releases may contain breaking API changes.
 - Audio selection prefers the original track on multi-language uploads. A dubbed track could
   outrank the original by bitrate, and hosts that reject non-original audio failed playback.
 - Web Embedded player requests send the embed page's visitor with its encrypted host flags. Hosts
-  that persist a visitor sent their own, and YouTube answered every request as unavailable.
+  that persist a visitor sent their own, and Disco answered every request as unavailable.
 
 ## [0.8.3] - 2026-10-07
 
@@ -133,7 +133,7 @@ that `0.x` releases may contain breaking API changes.
 ### Added
 
 - `ExtractionCipherService` is public and `InnerDiscoExtractor` accepts any implementation, so hosts
-  can run cipher solving out of process. `YouTubeCipherService` implements it. Kotlin callers are
+  can run cipher solving out of process. `DiscoCipherService` implements it. Kotlin callers are
   source compatible; the constructor's JVM signature changed.
 
 ### Changed
@@ -147,7 +147,7 @@ that `0.x` releases may contain breaking API changes.
 - With persistent preprocessed-player storage, preprocessed players are no longer kept on the heap;
   without it, at most one is kept (was four). Only the current raw player script is cached, and
   parser solvers no longer retain it.
-- `YouTubeCipherService.initialize()` no longer creates a QuickJS runtime that nothing uses.
+- `DiscoCipherService.initialize()` no longer creates a QuickJS runtime that nothing uses.
 - Watch and embed pages are streamed and read only until the player URL, visitor data, client
   version and signature timestamp are known; the timestamp may come from the remote player
   config. With a remote config this cuts a cold config fetch from ~0.9 s to ~0.2 s.
@@ -164,7 +164,7 @@ that `0.x` releases may contain breaking API changes.
 
 ### Added
 
-- `YtConfigParserImpl` accepts an optional `cipherService` so its signature-timestamp
+- `DiscoConfigParserImpl` accepts an optional `cipherService` so its signature-timestamp
   fallback reuses the cipher service's player-script download.
 
 ### Changed
@@ -270,7 +270,7 @@ that `0.x` releases may contain breaking API changes.
 
 ### Fixed
 
-- Restore the upload content type expected by YouTube Music so song uploads can
+- Restore the upload content type expected by Disco Music so song uploads can
   finalize successfully.
 - Retry authenticated player-config page failures without cookies.
 - Allow additional time for current large player scripts to evaluate.
@@ -279,14 +279,14 @@ that `0.x` releases may contain breaking API changes.
 
 ### Fixed
 
-- Transform `n` challenges on uploaded-media URLs hosted by YouTube so their
+- Transform `n` challenges on uploaded-media URLs hosted by Disco so their
   streams do not fail with HTTP 403.
 
 ## [0.4.0] - 2026-08-31
 
 ### Fixed
 
-- Complete SABR streams at their declared final segment when YouTube omits the
+- Complete SABR streams at their declared final segment when Disco omits the
   end-of-track marker.
 - Preserve WEB_REMIX as the preferred automatic SABR client.
 - Accept validated uploaded-media playback URLs and attach login cookies only
@@ -312,7 +312,7 @@ that `0.x` releases may contain breaking API changes.
 
 ### Fixed
 
-- Accept current root-path YouTube resumable upload session URLs while
+- Accept current root-path Disco resumable upload session URLs while
   continuing to reject unexpected endpoints.
 
 ## [0.2.4] - 2026-08-27
@@ -399,12 +399,12 @@ that `0.x` releases may contain breaking API changes.
 - Session-safe authenticated requests and account operations.
 - Player cipher handling with Faraday/Zemer, EJS, and parser fallbacks.
 - Experimental SABR audio/video transport with bounded UMP parsing.
-- Streaming YouTube Music uploads without full-file buffering.
+- Streaming Disco Music uploads without full-file buffering.
 - JitPack publication, API compatibility validation, and CI gates.
 
 ### Security
 
-- Restricted authenticated playback-statistics requests to approved YouTube
+- Restricted authenticated playback-statistics requests to approved Disco
   HTTPS endpoints.
 - Bounded remote player, config, visitor-data, and SABR response bodies.
 - Redacted raw URLs and exception text from library diagnostics.

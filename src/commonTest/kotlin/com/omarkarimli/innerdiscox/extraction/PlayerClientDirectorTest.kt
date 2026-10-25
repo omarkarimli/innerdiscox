@@ -15,7 +15,7 @@ import com.omarkarimli.innerdiscox.extraction.strategy.PlaybackTransportPreferen
 import com.omarkarimli.innerdiscox.extraction.strategy.PoTokenProviderKind
 import com.omarkarimli.innerdiscox.extraction.strategy.PoTokenRequirement
 import com.omarkarimli.innerdiscox.extraction.strategy.SelectedClient
-import com.omarkarimli.innerdiscox.models.YouTubeClient
+import com.omarkarimli.innerdiscox.models.DiscoClient
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -277,7 +277,7 @@ class PlayerClientDirectorTest {
         runBlocking {
             val client = client { PLAYER_RESPONSE }
             val innerDisco = InnerDisco(client, retryDelay = {}).also { it.cookie = "SAPISID=synthetic-session" }
-            val anonymousClient = YouTubeClient.VISIONOS_0_1
+            val anonymousClient = DiscoClient.VISIONOS_0_1
             val sourceManifest = checkNotNull(PlaybackClientCatalog.findManifest("WEB_REMIX"))
             val manifest =
                 sourceManifest.copy(
@@ -387,7 +387,7 @@ class PlayerClientDirectorTest {
                                 }
 
                                 // A playable Web SABR response still needs a GVS token, which triggers the visitor fetch.
-                                request.headers["X-YouTube-Client-Name"] == YouTubeClient.WEB_SABR.clientId -> {
+                                request.headers["X-Disco-Client-Name"] == DiscoClient.WEB_SABR.clientId -> {
                                     TOKEN_PLAYER_RESPONSE
                                 }
 
@@ -431,7 +431,7 @@ class PlayerClientDirectorTest {
             val result = director.fetchPlayerResponses("video", PlayerConfig("player.js", null, null, null), ContentHints())
 
             assertEquals("fresh-visitor", innerDisco.visitorData)
-            assertEquals(YouTubeClient.VISIONOS.clientName, result.playableResponses.single().clientName)
+            assertEquals(DiscoClient.VISIONOS.clientName, result.playableResponses.single().clientName)
             client.close()
         }
 
@@ -592,7 +592,7 @@ class PlayerClientDirectorTest {
                 HttpClient(
                     MockEngine { request ->
                         requests++
-                        if (request.headers["X-YouTube-Client-Name"] == YouTubeClient.VISIONOS.clientId) delay(100)
+                        if (request.headers["X-Disco-Client-Name"] == DiscoClient.VISIONOS.clientId) delay(100)
                         respond(PLAYER_RESPONSE, HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json"))
                     },
                 ) {
@@ -602,14 +602,14 @@ class PlayerClientDirectorTest {
                 PlayerClientDirector(
                     InnerDisco(client, retryDelay = {}),
                     object : ClientFallbackStrategy {
-                        override fun resolveClients(hints: ContentHints) = listOf(YouTubeClient.VISIONOS, YouTubeClient.ANDROID_VR_1_65_10)
+                        override fun resolveClients(hints: ContentHints) = listOf(DiscoClient.VISIONOS, DiscoClient.ANDROID_VR_1_65_10)
                     },
                     NoTokenProvider,
                     playerRequestTimeoutMs = 25,
                 )
             val batch = director.fetchPlayerResponses("video", PlayerConfig("player.js", null, null, null), ContentHints())
             assertEquals(2, requests)
-            assertEquals(YouTubeClient.ANDROID_VR_1_65_10.clientName, batch.playableResponses.single().clientName)
+            assertEquals(DiscoClient.ANDROID_VR_1_65_10.clientName, batch.playableResponses.single().clientName)
             client.close()
         }
 
@@ -625,7 +625,7 @@ class PlayerClientDirectorTest {
                 PlayerClientDirector(
                     InnerDisco(client, retryDelay = {}),
                     object : ClientFallbackStrategy {
-                        override fun resolveClients(hints: ContentHints) = listOf(YouTubeClient.VISIONOS)
+                        override fun resolveClients(hints: ContentHints) = listOf(DiscoClient.VISIONOS)
                     },
                     NoTokenProvider,
                 )
@@ -879,7 +879,7 @@ class PlayerClientDirectorTest {
                 PlayerClientDirector(
                     InnerDisco(client, retryDelay = {}),
                     object : ClientFallbackStrategy {
-                        override fun resolveClients(hints: ContentHints) = listOf(YouTubeClient.VISIONOS)
+                        override fun resolveClients(hints: ContentHints) = listOf(DiscoClient.VISIONOS)
                     },
                     NoTokenProvider,
                 )
@@ -902,7 +902,7 @@ class PlayerClientDirectorTest {
                 PlayerClientDirector(
                     InnerDisco(client, retryDelay = {}),
                     object : ClientFallbackStrategy {
-                        override fun resolveClients(hints: ContentHints) = listOf(YouTubeClient.VISIONOS)
+                        override fun resolveClients(hints: ContentHints) = listOf(DiscoClient.VISIONOS)
                     },
                     NoTokenProvider,
                 )

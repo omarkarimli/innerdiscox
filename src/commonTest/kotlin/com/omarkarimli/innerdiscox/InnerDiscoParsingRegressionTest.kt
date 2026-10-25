@@ -4,7 +4,7 @@ import com.omarkarimli.innerdiscox.models.WatchEndpoint
 import com.omarkarimli.innerdiscox.models.response.AccountMenuResponse
 import com.omarkarimli.innerdiscox.models.response.AccountMenuResponse.Action.OpenPopupAction.Popup.MultiPageMenuRenderer.Header.ActiveAccountHeaderRenderer
 import com.omarkarimli.innerdiscox.models.response.PlayerResponse
-import com.omarkarimli.innerdiscox.utils.YouTubeUrlParser
+import com.omarkarimli.innerdiscox.utils.DiscoUrlParser
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,51 +16,51 @@ class InnerDiscoParsingRegressionTest {
     private val json = Json { ignoreUnknownKeys = true }
 
     @Test
-    fun musicYoutubePlaylistUrlsAreNotAlwaysAlbums() {
-        val parsed = YouTubeUrlParser.parse("https://music.youtube.com/playlist?list=PLabc123")
+    fun musicDiscoPlaylistUrlsAreNotAlwaysAlbums() {
+        val parsed = DiscoUrlParser.parse("https://music.youtube.com/playlist?list=PLabc123")
 
-        assertTrue(parsed is YouTubeUrlParser.ParsedUrl.Playlist)
+        assertTrue(parsed is DiscoUrlParser.ParsedUrl.Playlist)
         assertEquals("PLabc123", parsed.id)
     }
 
     @Test
-    fun musicYoutubeAlbumUrlsUseAlbumIds() {
-        val playlistAlbum = YouTubeUrlParser.parse("https://music.youtube.com/playlist?list=OLAK5uy_test")
-        val browseAlbum = YouTubeUrlParser.parse("https://music.youtube.com/browse/MPREtest")
+    fun musicDiscoAlbumUrlsUseAlbumIds() {
+        val playlistAlbum = DiscoUrlParser.parse("https://music.youtube.com/playlist?list=OLAK5uy_test")
+        val browseAlbum = DiscoUrlParser.parse("https://music.youtube.com/browse/MPREtest")
 
-        assertTrue(playlistAlbum is YouTubeUrlParser.ParsedUrl.Album)
+        assertTrue(playlistAlbum is DiscoUrlParser.ParsedUrl.Album)
         assertEquals("OLAK5uy_test", playlistAlbum.id)
-        assertTrue(browseAlbum is YouTubeUrlParser.ParsedUrl.Album)
+        assertTrue(browseAlbum is DiscoUrlParser.ParsedUrl.Album)
         assertEquals("MPREtest", browseAlbum.id)
         assertEquals(
-            YouTubeUrlParser.ParsedUrl.Album("MPREtest"),
-            YouTubeUrlParser.parse("https://www.music.youtube.com/browse/MPREtest"),
+            DiscoUrlParser.ParsedUrl.Album("MPREtest"),
+            DiscoUrlParser.parse("https://www.music.youtube.com/browse/MPREtest"),
         )
     }
 
     @Test
-    fun youtubeUrlsRequireAnExactApprovedHostAndShape() {
-        val valid = YouTubeUrlParser.parse("youtube.com/watch?v=abcdefghijk")
+    fun discoUrlsRequireAnExactApprovedHostAndShape() {
+        val valid = DiscoUrlParser.parse("youtube.com/watch?v=abcdefghijk")
 
-        assertEquals(YouTubeUrlParser.ParsedUrl.Video("abcdefghijk"), valid)
+        assertEquals(DiscoUrlParser.ParsedUrl.Video("abcdefghijk"), valid)
         assertEquals(
-            YouTubeUrlParser.ParsedUrl.Video("abcdefghijk"),
-            YouTubeUrlParser.parse("http://youtu.be/abcdefghijk"),
+            DiscoUrlParser.ParsedUrl.Video("abcdefghijk"),
+            DiscoUrlParser.parse("http://youtu.be/abcdefghijk"),
         )
-        assertTrue(YouTubeUrlParser.parse("https://www.youtube.com.evil/watch?v=abcdefghijk") == null)
-        assertTrue(YouTubeUrlParser.parse("https://www.youtube.com/notv?v=abcdefghijk") == null)
-        assertTrue(YouTubeUrlParser.parse("watch this https://www.youtube.com/watch?v=abcdefghijk") == null)
-        assertTrue(YouTubeUrlParser.parse("https://youtu.be.evil/abcdefghijk") == null)
+        assertTrue(DiscoUrlParser.parse("https://www.youtube.com.evil/watch?v=abcdefghijk") == null)
+        assertTrue(DiscoUrlParser.parse("https://www.youtube.com/notv?v=abcdefghijk") == null)
+        assertTrue(DiscoUrlParser.parse("watch this https://www.youtube.com/watch?v=abcdefghijk") == null)
+        assertTrue(DiscoUrlParser.parse("https://youtu.be.evil/abcdefghijk") == null)
     }
 
     @Test
     fun mobileWatchUrlsWorkAcrossParserHelpers() {
         val url = "https://m.youtube.com/watch?v=dQw4w9WgXcQ"
 
-        assertEquals(YouTubeUrlParser.ParsedUrl.Video("dQw4w9WgXcQ"), YouTubeUrlParser.parse(url))
-        assertTrue(YouTubeUrlParser.isYouTubeUrl(url))
-        assertEquals("dQw4w9WgXcQ", YouTubeUrlParser.extractVideoId(url))
-        assertEquals(WatchEndpoint("dQw4w9WgXcQ"), YouTubeUrlParser.createWatchEndpoint(url))
+        assertEquals(DiscoUrlParser.ParsedUrl.Video("dQw4w9WgXcQ"), DiscoUrlParser.parse(url))
+        assertTrue(DiscoUrlParser.isDiscoUrl(url))
+        assertEquals("dQw4w9WgXcQ", DiscoUrlParser.extractVideoId(url))
+        assertEquals(WatchEndpoint("dQw4w9WgXcQ"), DiscoUrlParser.createWatchEndpoint(url))
         for (invalid in listOf(
             "https://m.youtube.com.evil/watch?v=dQw4w9WgXcQ",
             "https://evil-m.youtube.com/watch?v=dQw4w9WgXcQ",
@@ -68,8 +68,8 @@ class InnerDiscoParsingRegressionTest {
             "https://m.youtube.com/notv?v=dQw4w9WgXcQ",
             "https://m.youtube.com/watch?v=short",
         )) {
-            assertNull(YouTubeUrlParser.parse(invalid))
-            assertNull(YouTubeUrlParser.createWatchEndpoint(invalid))
+            assertNull(DiscoUrlParser.parse(invalid))
+            assertNull(DiscoUrlParser.createWatchEndpoint(invalid))
         }
     }
 

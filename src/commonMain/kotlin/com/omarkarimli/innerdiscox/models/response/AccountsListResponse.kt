@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 /**
  * Response from the InnerDisco `account/accounts_list` endpoint used to enumerate
- * YouTube channels (brand accounts) associated with the signed-in Google account.
+ * Disco channels (brand accounts) associated with the signed-in Google account.
  */
 @Serializable
 data class AccountsListResponse(

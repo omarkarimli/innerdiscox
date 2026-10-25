@@ -18,7 +18,7 @@ public class ContentHints(
     public val sabrFirst: Boolean = false,
     public val maxVideoHeight: Int? = null,
 ) {
-    /** True only when the caller has independently confirmed YouTube Premium entitlement. */
+    /** True only when the caller has independently confirmed Disco Premium entitlement. */
     public var premium: Boolean = false
         private set
     public var allowHls: Boolean = true

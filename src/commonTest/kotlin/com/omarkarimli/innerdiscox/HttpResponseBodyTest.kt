@@ -1,6 +1,6 @@
 package com.omarkarimli.innerdiscox
 
-import com.omarkarimli.innerdiscox.models.YouTubeClient
+import com.omarkarimli.innerdiscox.models.DiscoClient
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockEngine
@@ -29,13 +29,13 @@ class HttpResponseBodyTest {
         runBlocking {
             val operations: List<suspend (InnerDisco) -> Unit> =
                 listOf(
-                    { it.browse(YouTubeClient.WEB) },
-                    { it.search(YouTubeClient.WEB, "query") },
-                    { it.player(YouTubeClient.WEB, "video") },
-                    { it.getTranscript(YouTubeClient.WEB, "video") },
+                    { it.browse(DiscoClient.WEB) },
+                    { it.search(DiscoClient.WEB, "query") },
+                    { it.player(DiscoClient.WEB, "video") },
+                    { it.getTranscript(DiscoClient.WEB, "video") },
                     { it.uploadSong("track", byteArrayOf(1)) },
-                    { it.setPlaylistThumbnail(YouTubeClient.WEB_REMIX, "playlist", byteArrayOf(1)) },
-                    { it.playerWithTvBearerSessionBound(YouTubeClient.TVHTML5, "video", null, it.sessionSnapshot(), "test-token") },
+                    { it.setPlaylistThumbnail(DiscoClient.WEB_REMIX, "playlist", byteArrayOf(1)) },
+                    { it.playerWithTvBearerSessionBound(DiscoClient.TVHTML5, "video", null, it.sessionSnapshot(), "test-token") },
                 )
             for (operation in operations) {
                 val channel = ByteChannel(autoFlush = true)
@@ -105,7 +105,7 @@ class HttpResponseBodyTest {
                     install(ContentNegotiation) { json() }
                 }
             val innerDisco = InnerDisco(client)
-            val response = innerDisco.browse(YouTubeClient.WEB)
+            val response = innerDisco.browse(DiscoClient.WEB)
             assertEquals("{}", response.bodyAsTextLimited(1024))
             assertEquals("{}", response.bodyAsTextLimited(1024))
             assertEquals(JsonObject(emptyMap()), response.body<JsonObject>())

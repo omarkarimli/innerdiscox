@@ -25,7 +25,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Clock
 
-class YouTubeCipherServiceTest {
+class DiscoCipherServiceTest {
     @Test
     fun partialRemoteSuccessStillReusesCachedPreprocessedPlayer() =
         runBlocking {
@@ -69,7 +69,7 @@ class YouTubeCipherServiceTest {
                         }
                     },
                 )
-            val service = YouTubeCipherService(http, RemotePlayerConfigStore(http, repository))
+            val service = DiscoCipherService(http, RemotePlayerConfigStore(http, repository))
             var reads = 0
             service.setPreprocessedPlayerCache(
                 read = {
@@ -113,13 +113,13 @@ class YouTubeCipherServiceTest {
             val parserEngine = QuickJsEngine()
             try {
                 parserEngine.initialize()
-                parserEngine.setupYoutubeGlobals()
+                parserEngine.setupDiscoGlobals()
                 assertFailsWith<Exception> { parserEngine.execute(PlayerScriptParser.generateSolverScript(parsed)) }
             } finally {
                 parserEngine.dispose()
             }
             val client = HttpClient(MockEngine { respond(playerCode) })
-            val service = YouTubeCipherService(client)
+            val service = DiscoCipherService(client)
             try {
                 assertEquals(
                     "$MEDIA_URL?signature=cba",
@@ -136,7 +136,7 @@ class YouTubeCipherServiceTest {
     fun malformedCipherDoesNotAbortUsableFormats() =
         runBlocking {
             val client = HttpClient(MockEngine { respond(PLAYER_CODE) })
-            val service = YouTubeCipherService(client)
+            val service = DiscoCipherService(client)
             try {
                 val direct = format("$MEDIA_URL?direct=1")
                 val valid = format(MEDIA_URL).copy(url = null, signatureCipher = "s=abc&url=$MEDIA_URL")
@@ -164,7 +164,7 @@ class YouTubeCipherServiceTest {
     fun batchUrlReusePreservesAuthorityValidationAndFragments() =
         runBlocking {
             val client = HttpClient(MockEngine { respond(PLAYER_CODE) })
-            val service = YouTubeCipherService(client)
+            val service = DiscoCipherService(client)
             try {
                 val unsafe =
                     listOf(
@@ -200,7 +200,7 @@ class YouTubeCipherServiceTest {
                         respond("player code", headers = headersOf(HttpHeaders.ContentType, ContentType.Text.Plain.toString()))
                     },
                 )
-            val service = YouTubeCipherService(httpClient)
+            val service = DiscoCipherService(httpClient)
             try {
                 val first = "https://www.youtube.com/s/player/12345678/player.js"
                 val second = "https://www.youtube.com/s/player/87654321/player.js"
@@ -222,7 +222,7 @@ class YouTubeCipherServiceTest {
         runBlocking {
             val requestStarted = CompletableDeferred<Unit>()
             val service =
-                YouTubeCipherService(
+                DiscoCipherService(
                     HttpClient(
                         MockEngine {
                             requestStarted.complete(Unit)
@@ -270,7 +270,7 @@ class YouTubeCipherServiceTest {
                 ) {
                     install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
                 }
-            val service = YouTubeCipherService(httpClient)
+            val service = DiscoCipherService(httpClient)
             val format =
                 PlayerResponse.StreamingData.Format(
                     itag = 140,
@@ -292,7 +292,7 @@ class YouTubeCipherServiceTest {
     fun processFormatsDoesNotFetchPlayerScriptsFromUntrustedHosts() =
         runBlocking {
             val engine = MockEngine { error("Untrusted player URL must not be requested") }
-            val service = YouTubeCipherService(HttpClient(engine))
+            val service = DiscoCipherService(HttpClient(engine))
             val format =
                 PlayerResponse.StreamingData.Format(
                     itag = 140,
@@ -308,7 +308,7 @@ class YouTubeCipherServiceTest {
 
     @Test
     fun cipherQueryValuesAreEncodedWithoutMovingFragments() {
-        val service = YouTubeCipherService(HttpClient(MockEngine { error("No request expected") }))
+        val service = DiscoCipherService(HttpClient(MockEngine { error("No request expected") }))
 
         assertEquals(
             "https://example.googlevideo.com/videoplayback?expire=1&sig=a%26b%2Bc%23d#fragment",

@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
 import kotlin.time.Clock
 
 /**
- * Service for deobfuscating YouTube player cipher challenges.
+ * Service for deobfuscating Disco player cipher challenges.
  *
  * This service handles:
  * - N-parameter challenges (throttling prevention)
@@ -32,7 +32,7 @@ import kotlin.time.Clock
  * Uses Faraday's validated zemer-style player configs first, then yt-dlp EJS
  * and regex-based [PlayerScriptParser] fallbacks.
  */
-class YouTubeCipherService(
+class DiscoCipherService(
     private val httpClient: HttpClient,
     private val remotePlayerConfigStore: RemotePlayerConfigStore? = null,
     private val logger: InnerDiscoLogger = InnerDiscoLogger.NONE,
@@ -43,7 +43,7 @@ class YouTubeCipherService(
     ) : IllegalStateException("Player script request failed with HTTP $status")
 
     private companion object {
-        private const val TAG = "YouTubeCipherService"
+        private const val TAG = "DiscoCipherService"
         private const val OKHTTP_USER_AGENT = "okhttp/5.4.0"
         private const val MAX_PLAYER_CACHE_ENTRIES = 4
         private const val ZEMER_FAILURE_RETRY_MS = 60_000L
@@ -158,7 +158,7 @@ class YouTubeCipherService(
     /**
      * Process streaming data formats and deobfuscate cipher URLs.
      *
-     * @param playerUrl The URL of the YouTube player JS
+     * @param playerUrl The URL of the Disco player JS
      * @param formats The streaming formats from the player response
      * @return List of formats with deobfuscated URLs
      */
@@ -568,7 +568,7 @@ class YouTubeCipherService(
     /**
      * Deobfuscate a signature cipher string.
      *
-     * @param playerUrl The URL of the YouTube player JS
+     * @param playerUrl The URL of the Disco player JS
      * @param cipher The cipher string from the format
      * @return The deobfuscated URL or null if failed
      */
@@ -633,7 +633,7 @@ class YouTubeCipherService(
     /**
      * Process the n-parameter in a URL to prevent throttling.
      *
-     * @param playerUrl The URL of the YouTube player JS
+     * @param playerUrl The URL of the Disco player JS
      * @param url The URL with n parameter
      * @return The URL with processed n parameter or null if failed
      */
@@ -871,7 +871,7 @@ class YouTubeCipherService(
     }
 
     /**
-     * Download the YouTube player JavaScript file.
+     * Download the Disco player JavaScript file.
      */
     private suspend fun downloadPlayerScript(playerUrl: String): String {
         val validatedUrl = validatedPlayerScriptUrl(playerUrl)
@@ -918,7 +918,7 @@ class YouTubeCipherService(
         val solverEngine = QuickJsEngine()
         try {
             solverEngine.initialize()
-            solverEngine.setupYoutubeGlobals()
+            solverEngine.setupDiscoGlobals()
             if (solverScript.isNotBlank()) {
                 solverEngine.execute(solverScript)
             }
@@ -1120,7 +1120,7 @@ class YouTubeCipherService(
 
 internal fun validatedPlayerScriptUrl(value: String): Url {
     val url = Url(value)
-    val isYouTubeHost =
+    val isDiscoHost =
         url.host == "youtube.com" ||
             url.host.endsWith(".youtube.com") ||
             url.host == "youtube-nocookie.com" ||
@@ -1128,11 +1128,11 @@ internal fun validatedPlayerScriptUrl(value: String): Url {
     require(
         url.protocol.name == "https" &&
             url.port == 443 && url.user == null && url.password == null &&
-            isYouTubeHost &&
+            isDiscoHost &&
             url.encodedPath.startsWith("/s/player/") &&
             url.encodedPath.endsWith(".js"),
     ) {
-        "Player script URL must use an approved YouTube HTTPS endpoint"
+        "Player script URL must use an approved Disco HTTPS endpoint"
     }
     return url
 }

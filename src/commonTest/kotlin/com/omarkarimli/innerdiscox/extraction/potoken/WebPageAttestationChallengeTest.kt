@@ -12,7 +12,7 @@ class WebPageAttestationChallengeTest {
     fun malformedPrefixesHaveLinearScanCost() {
         for (prefix in listOf("window.ytAtN(", "window.ytAtN({", "window.ytAtN('")) {
             val page = CountingCharacters(prefix.repeat(10_000))
-            assertNull(extractYtAtN(page))
+            assertNull(extractDiscoAtN(page))
             assertTrue(page.reads <= page.length * 8, "Scanner exceeded its linear work bound")
         }
     }

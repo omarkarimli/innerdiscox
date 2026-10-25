@@ -1,10 +1,10 @@
 package com.omarkarimli.innerdiscox.cipher
 
 import com.omarkarimli.innerdiscox.InnerDiscoLogger
-import com.omarkarimli.innerdiscox.cipher.YouTubeCipherServiceTest.Companion.MEDIA_URL
-import com.omarkarimli.innerdiscox.cipher.YouTubeCipherServiceTest.Companion.PLAYER_CODE
-import com.omarkarimli.innerdiscox.cipher.YouTubeCipherServiceTest.Companion.PLAYER_URL
-import com.omarkarimli.innerdiscox.cipher.YouTubeCipherServiceTest.Companion.REMOTE_PLAYER_CODE
+import com.omarkarimli.innerdiscox.cipher.DiscoCipherServiceTest.Companion.MEDIA_URL
+import com.omarkarimli.innerdiscox.cipher.DiscoCipherServiceTest.Companion.PLAYER_CODE
+import com.omarkarimli.innerdiscox.cipher.DiscoCipherServiceTest.Companion.PLAYER_URL
+import com.omarkarimli.innerdiscox.cipher.DiscoCipherServiceTest.Companion.REMOTE_PLAYER_CODE
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -24,7 +24,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 // Tests that inspect private service state through JVM reflection.
-class YouTubeCipherServiceJvmTest {
+class DiscoCipherServiceJvmTest {
     @Test
     fun failedRemoteSolverRetriesOnlyAfterConfigChangeOrCooldown() =
         runBlocking {
@@ -54,7 +54,7 @@ class YouTubeCipherServiceJvmTest {
             val store = RemotePlayerConfigStore(client, repository)
             var failures = 0
             val service =
-                YouTubeCipherService(
+                DiscoCipherService(
                     client,
                     store,
                     InnerDiscoLogger { event ->
@@ -106,7 +106,7 @@ class YouTubeCipherServiceJvmTest {
                         respond("retry code")
                     },
                 )
-            val service = YouTubeCipherService(client)
+            val service = DiscoCipherService(client)
             val owner = async { service.playerCode(PLAYER_URL) }
             try {
                 started.await()
@@ -145,7 +145,7 @@ class YouTubeCipherServiceJvmTest {
                 }
             val client = HttpClient(MockEngine { respond(REMOTE_PLAYER_CODE) })
             val store = RemotePlayerConfigStore(client, configRepository())
-            val service = YouTubeCipherService(client, store)
+            val service = DiscoCipherService(client, store)
             var reads = 0
             try {
                 service.setPreprocessedPlayerCache({
@@ -178,7 +178,7 @@ class YouTubeCipherServiceJvmTest {
             .apply { isAccessible = true }
             .get(instance) as T
 
-    private fun format(url: String) = YouTubeCipherServiceTest().format(url)
+    private fun format(url: String) = DiscoCipherServiceTest().format(url)
 
-    private fun configRepository(): PlayerConfigRepository = YouTubeCipherServiceTest().configRepository()
+    private fun configRepository(): PlayerConfigRepository = DiscoCipherServiceTest().configRepository()
 }

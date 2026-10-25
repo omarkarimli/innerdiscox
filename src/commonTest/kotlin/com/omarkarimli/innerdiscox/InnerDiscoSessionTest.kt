@@ -1,7 +1,7 @@
 package com.omarkarimli.innerdiscox
 
-import com.omarkarimli.innerdiscox.models.YouTubeClient
-import com.omarkarimli.innerdiscox.models.YouTubeLocale
+import com.omarkarimli.innerdiscox.models.DiscoClient
+import com.omarkarimli.innerdiscox.models.DiscoLocale
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -52,7 +52,7 @@ class InnerDiscoSessionTest {
                         followRedirects = true
                     }
                 val innerDisco = InnerDisco(client).also { it.cookie = "SAPISID=secret" }
-                val response = innerDisco.registerPlayback(YouTubeClient.WEB, "https://s.youtube.com/api/stats/playback", "cpn")
+                val response = innerDisco.registerPlayback(DiscoClient.WEB, "https://s.youtube.com/api/stats/playback", "cpn")
                 assertEquals(HttpStatusCode.Found, response.status)
                 assertEquals(1, engine.requestHistory.size)
                 assertEquals("SAPISID=secret", engine.requestHistory.single().headers[HttpHeaders.Cookie])
@@ -168,7 +168,7 @@ class InnerDiscoSessionTest {
                     launch {
                         val sibling = launch { CompletableDeferred<Unit>().await() }
                         try {
-                            assertFailsWith<CancellationException> { innerDisco.likeVideo(YouTubeClient.WEB, "video") }
+                            assertFailsWith<CancellationException> { innerDisco.likeVideo(DiscoClient.WEB, "video") }
                             assertTrue(isActive)
                             assertTrue(sibling.isActive)
                         } finally {
@@ -195,9 +195,9 @@ class InnerDiscoSessionTest {
                 innerDisco.cookie = "SAPISID=old"
                 assertFailsWith<CancellationException> {
                     if (search) {
-                        innerDisco.search(YouTubeClient.WEB, "query")
+                        innerDisco.search(DiscoClient.WEB, "query")
                     } else {
-                        innerDisco.browse(YouTubeClient.WEB, "library", setLogin = true)
+                        innerDisco.browse(DiscoClient.WEB, "library", setLogin = true)
                     }
                 }
                 assertEquals(1, engine.requestHistory.size)
@@ -211,12 +211,12 @@ class InnerDiscoSessionTest {
         runBlocking {
             val reads: List<suspend (InnerDisco) -> Unit> =
                 listOf(
-                    { it.accountMenu(YouTubeClient.WEB) },
-                    { it.accountsList(YouTubeClient.WEB) },
-                    { it.player(YouTubeClient.WEB, "video") },
-                    { it.next(YouTubeClient.WEB, "video") },
-                    { it.getQueue(YouTubeClient.WEB, listOf("video"), null) },
-                    { it.getSearchSuggestions(YouTubeClient.WEB, "query", setLogin = true) },
+                    { it.accountMenu(DiscoClient.WEB) },
+                    { it.accountsList(DiscoClient.WEB) },
+                    { it.player(DiscoClient.WEB, "video") },
+                    { it.next(DiscoClient.WEB, "video") },
+                    { it.getQueue(DiscoClient.WEB, listOf("video"), null) },
+                    { it.getSearchSuggestions(DiscoClient.WEB, "query", setLogin = true) },
                 )
             for (read in reads) {
                 val started = CompletableDeferred<Unit>()
@@ -256,8 +256,8 @@ class InnerDiscoSessionTest {
                     }
                 }
             val innerDisco = clientWithContentNegotiation(engine)
-            val player = async { innerDisco.player(YouTubeClient.WEB, "video") }
-            val mutation = async { innerDisco.likeVideo(YouTubeClient.WEB, "video") }
+            val player = async { innerDisco.player(DiscoClient.WEB, "video") }
+            val mutation = async { innerDisco.likeVideo(DiscoClient.WEB, "video") }
             repeat(2) { started.receive() }
             assertEquals("visitor", innerDisco.fetchFreshVisitorData())
             release.complete(Unit)
@@ -292,9 +292,9 @@ class InnerDiscoSessionTest {
                         respondOk()
                     }
                 val innerDisco = clientWithContentNegotiation(engine).also { it.visitorData = "existing" }
-                val result = async { innerDisco.likeVideo(YouTubeClient.WEB, "video") }
+                val result = async { innerDisco.likeVideo(DiscoClient.WEB, "video") }
                 started.await()
-                if (changeLocale) innerDisco.locale = YouTubeLocale("PL", "pl") else innerDisco.visitorData = "replacement"
+                if (changeLocale) innerDisco.locale = DiscoLocale("PL", "pl") else innerDisco.visitorData = "replacement"
                 assertFailsWith<CancellationException> { result.await() }
                 innerDisco.close()
                 innerDisco.httpClient.close()
@@ -308,7 +308,7 @@ class InnerDiscoSessionTest {
             val innerDisco = InnerDisco(HttpClient(engine)).also { it.cookie = "Cookie: SAPISID=secret" }
 
             innerDisco.registerPlaybackWithSession(
-                client = YouTubeClient.WEB,
+                client = DiscoClient.WEB,
                 url = "https://s.youtube.com/api/stats/playback",
                 cpn = "cpn",
                 playlistId = null,
@@ -343,7 +343,7 @@ class InnerDiscoSessionTest {
                     )
                 }
 
-            innerDisco.player(YouTubeClient.VISIONOS, videoId = "video-id")
+            innerDisco.player(DiscoClient.VISIONOS, videoId = "video-id")
 
             assertEquals("Cgt-visitor_part%3D%3D", engine.requestHistory.single().headers["X-Goog-Visitor-Id"])
         }
@@ -532,7 +532,7 @@ class InnerDiscoSessionTest {
             val registration =
                 async {
                     innerDisco.registerPlaybackWithSession(
-                        YouTubeClient.WEB_REMIX,
+                        DiscoClient.WEB_REMIX,
                         "https://s.youtube.com/api/stats/playback",
                         "cpn",
                         null,
@@ -558,7 +558,7 @@ class InnerDiscoSessionTest {
                 }
             val innerDisco = clientWithContentNegotiation(engine).also { it.cookie = "SAPISID=old-session" }
 
-            val mutation = async { innerDisco.likeVideo(YouTubeClient.WEB_REMIX, "video-id") }
+            val mutation = async { innerDisco.likeVideo(DiscoClient.WEB_REMIX, "video-id") }
             requestStarted.await()
             innerDisco.cookie = "SAPISID=new-session"
 
@@ -575,10 +575,10 @@ class InnerDiscoSessionTest {
             innerDisco.cookie = "SAPISID=new-session"
 
             assertFailsWith<CancellationException> {
-                innerDisco.unlikePlaylist(YouTubeClient.WEB_REMIX, "playlist-id", oldSession)
+                innerDisco.unlikePlaylist(DiscoClient.WEB_REMIX, "playlist-id", oldSession)
             }
             assertFailsWith<CancellationException> {
-                innerDisco.deletePlaylist(YouTubeClient.WEB_REMIX, "playlist-id", oldSession)
+                innerDisco.deletePlaylist(DiscoClient.WEB_REMIX, "playlist-id", oldSession)
             }
             assertTrue(engine.requestHistory.isEmpty())
         }
@@ -595,7 +595,7 @@ class InnerDiscoSessionTest {
                 }
             val innerDisco = clientWithContentNegotiation(engine).also { it.cookie = "SAPISID=old-session" }
 
-            val mutation = async { innerDisco.feedback(YouTubeClient.WEB_REMIX, listOf("feedback-token")) }
+            val mutation = async { innerDisco.feedback(DiscoClient.WEB_REMIX, listOf("feedback-token")) }
             requestStarted.await()
             innerDisco.cookie = "SAPISID=new-session"
 
@@ -644,7 +644,7 @@ class InnerDiscoSessionTest {
             ).forEach { url ->
                 assertFailsWith<IllegalArgumentException> {
                     innerDisco.registerPlaybackWithSession(
-                        YouTubeClient.WEB_REMIX,
+                        DiscoClient.WEB_REMIX,
                         url,
                         "cpn",
                         null,
@@ -663,7 +663,7 @@ class InnerDiscoSessionTest {
             val innerDisco = InnerDisco(HttpClient(engine)).also { it.cookie = "SAPISID=secret" }
 
             innerDisco.registerPlaybackWithSession(
-                YouTubeClient.ANDROID,
+                DiscoClient.ANDROID,
                 "https://s.youtube.com/api/stats/playback",
                 "cpn",
                 null,
@@ -683,7 +683,7 @@ class InnerDiscoSessionTest {
             val innerDisco = InnerDisco(HttpClient(engine)).also { it.cookie = "SAPISID=secret" }
 
             innerDisco.registerPlaybackWithSession(
-                YouTubeClient.WEB,
+                DiscoClient.WEB,
                 "https://s.youtube.com/api/stats/playback",
                 "cpn",
                 null,
@@ -798,7 +798,7 @@ class InnerDiscoSessionTest {
         }
 
     @Test
-    fun uploadRejectsUnexpectedYouTubeSessionPath() =
+    fun uploadRejectsUnexpectedDiscoSessionPath() =
         runBlocking {
             val engine =
                 MockEngine {
@@ -914,7 +914,7 @@ class InnerDiscoSessionTest {
                 }
             val innerDisco = clientWithContentNegotiation(engine).also { it.cookie = "SAPISID=secret" }
 
-            val response = innerDisco.setPlaylistThumbnail(YouTubeClient.WEB_REMIX, "VLPL123", byteArrayOf(1, 2, 3))
+            val response = innerDisco.setPlaylistThumbnail(DiscoClient.WEB_REMIX, "VLPL123", byteArrayOf(1, 2, 3))
 
             assertEquals(HttpStatusCode.OK, response.status)
             assertEquals(3, requests)
@@ -927,8 +927,8 @@ class InnerDiscoSessionTest {
             val engine = MockEngine { respondOk() }
             val innerDisco = clientWithContentNegotiation(engine).also { it.cookie = "SAPISID=secret" }
 
-            innerDisco.addPlaylistToPlaylist(YouTubeClient.WEB_REMIX, "VLPL123", "VLPL456")
-            innerDisco.deletePrivatelyOwnedEntity(YouTubeClient.WEB_REMIX, "entity-id")
+            innerDisco.addPlaylistToPlaylist(DiscoClient.WEB_REMIX, "VLPL123", "VLPL456")
+            innerDisco.deletePrivatelyOwnedEntity(DiscoClient.WEB_REMIX, "entity-id")
 
             assertEquals(2, engine.requestHistory.size)
             val addBody = (engine.requestHistory[0].body as io.ktor.http.content.TextContent).text
@@ -955,9 +955,9 @@ class InnerDiscoSessionTest {
                     )
                 }
 
-            innerDisco.browse(YouTubeClient.WEB_REMIX, browseId = "FEmusic_home")
-            innerDisco.next(YouTubeClient.WEB_REMIX, videoId = "video-id")
-            innerDisco.getQueue(YouTubeClient.WEB_REMIX, videoIds = listOf("video-id"), playlistId = null)
+            innerDisco.browse(DiscoClient.WEB_REMIX, browseId = "FEmusic_home")
+            innerDisco.next(DiscoClient.WEB_REMIX, videoId = "video-id")
+            innerDisco.getQueue(DiscoClient.WEB_REMIX, videoIds = listOf("video-id"), playlistId = null)
 
             assertEquals(3, engine.requestHistory.size)
             engine.requestHistory.forEach { request ->
@@ -984,7 +984,7 @@ class InnerDiscoSessionTest {
                     )
                 }
 
-            innerDisco.browse(YouTubeClient.WEB_REMIX, browseId = "FEmusic_library_landing", setLogin = true)
+            innerDisco.browse(DiscoClient.WEB_REMIX, browseId = "FEmusic_library_landing", setLogin = true)
 
             val request = engine.requestHistory.single()
             assertTrue(request.headers[HttpHeaders.Cookie]?.contains("SAPISID=account-secret") == true)
@@ -1008,7 +1008,7 @@ class InnerDiscoSessionTest {
                     )
                 }
 
-            innerDisco.accountsList(YouTubeClient.WEB)
+            innerDisco.accountsList(DiscoClient.WEB)
 
             val request = engine.requestHistory.single()
             assertEquals("www.youtube.com", request.url.host)
@@ -1024,7 +1024,7 @@ class InnerDiscoSessionTest {
             val engine = MockEngine { respondOk() }
             val innerDisco = clientWithContentNegotiation(engine).also { it.visitorData = "visitor-data" }
 
-            innerDisco.browse(YouTubeClient.WEB_REMIX, browseId = "FEmusic_new_releases")
+            innerDisco.browse(DiscoClient.WEB_REMIX, browseId = "FEmusic_new_releases")
 
             val request = engine.requestHistory.single()
             assertEquals("visitor-data", request.headers["X-Goog-Visitor-Id"])
@@ -1036,9 +1036,9 @@ class InnerDiscoSessionTest {
     fun requestLanguageHeaderDoesNotDuplicateExistingRegion() =
         runBlocking {
             val engine = MockEngine { respondOk() }
-            val innerDisco = clientWithContentNegotiation(engine).also { it.locale = YouTubeLocale(gl = "GB", hl = "en-GB") }
+            val innerDisco = clientWithContentNegotiation(engine).also { it.locale = DiscoLocale(gl = "GB", hl = "en-GB") }
 
-            innerDisco.browse(YouTubeClient.WEB_REMIX, browseId = "FEmusic_home")
+            innerDisco.browse(DiscoClient.WEB_REMIX, browseId = "FEmusic_home")
 
             assertEquals("en-GB,en;q=0.9", engine.requestHistory.single().headers[HttpHeaders.AcceptLanguage])
         }
@@ -1047,9 +1047,9 @@ class InnerDiscoSessionTest {
     fun requestLanguageHeaderAddsConfiguredRegionToBareLanguage() =
         runBlocking {
             val engine = MockEngine { respondOk() }
-            val innerDisco = clientWithContentNegotiation(engine).also { it.locale = YouTubeLocale(gl = "PL", hl = "pl") }
+            val innerDisco = clientWithContentNegotiation(engine).also { it.locale = DiscoLocale(gl = "PL", hl = "pl") }
 
-            innerDisco.browse(YouTubeClient.WEB_REMIX, browseId = "FEmusic_home")
+            innerDisco.browse(DiscoClient.WEB_REMIX, browseId = "FEmusic_home")
 
             assertEquals("pl-PL,pl;q=0.9", engine.requestHistory.single().headers[HttpHeaders.AcceptLanguage])
         }
@@ -1058,9 +1058,9 @@ class InnerDiscoSessionTest {
     fun requestLanguageHeaderOmitsRegionWhenCountryIsEmpty() =
         runBlocking {
             val engine = MockEngine { respondOk() }
-            val innerDisco = clientWithContentNegotiation(engine).also { it.locale = YouTubeLocale(gl = "", hl = "en") }
+            val innerDisco = clientWithContentNegotiation(engine).also { it.locale = DiscoLocale(gl = "", hl = "en") }
 
-            innerDisco.browse(YouTubeClient.WEB_REMIX, browseId = "FEmusic_home")
+            innerDisco.browse(DiscoClient.WEB_REMIX, browseId = "FEmusic_home")
 
             assertEquals("en", engine.requestHistory.single().headers[HttpHeaders.AcceptLanguage])
         }
@@ -1071,7 +1071,7 @@ class InnerDiscoSessionTest {
             val engine = MockEngine { respondOk() }
             val innerDisco = clientWithContentNegotiation(engine).also { it.visitorData = "visitor-data" }
 
-            innerDisco.search(YouTubeClient.WEB_REMIX, query = "test")
+            innerDisco.search(DiscoClient.WEB_REMIX, query = "test")
 
             val request = engine.requestHistory.single()
             assertEquals("visitor-data", request.headers["X-Goog-Visitor-Id"])
@@ -1094,7 +1094,7 @@ class InnerDiscoSessionTest {
                     )
                 }
 
-            innerDisco.search(YouTubeClient.WEB_REMIX, query = "test")
+            innerDisco.search(DiscoClient.WEB_REMIX, query = "test")
 
             val request = engine.requestHistory.single()
             assertTrue(request.headers[HttpHeaders.Cookie]?.contains("SAPISID=account-secret") == true)
@@ -1119,7 +1119,7 @@ class InnerDiscoSessionTest {
                     )
                 }
 
-            innerDisco.search(YouTubeClient.WEB_REMIX, query = "test", setLogin = false)
+            innerDisco.search(DiscoClient.WEB_REMIX, query = "test", setLogin = false)
 
             val request = engine.requestHistory.single()
             assertNull(request.headers[HttpHeaders.Cookie])
@@ -1139,7 +1139,7 @@ class InnerDiscoSessionTest {
                     it.regionOverrideActive = true
                 }
 
-            innerDisco.browse(YouTubeClient.WEB_REMIX, browseId = "FEmusic_new_releases")
+            innerDisco.browse(DiscoClient.WEB_REMIX, browseId = "FEmusic_new_releases")
 
             val request = engine.requestHistory.single()
             assertNull(request.headers["X-Goog-Visitor-Id"])
@@ -1158,7 +1158,7 @@ class InnerDiscoSessionTest {
                     it.regionOverrideActive = true
                 }
 
-            innerDisco.search(YouTubeClient.WEB_REMIX, query = "test")
+            innerDisco.search(DiscoClient.WEB_REMIX, query = "test")
 
             val request = engine.requestHistory.single()
             assertNull(request.headers["X-Goog-Visitor-Id"])

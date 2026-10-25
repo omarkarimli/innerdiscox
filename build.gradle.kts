@@ -17,14 +17,14 @@ plugins {
 group = providers.gradleProperty("GROUP").get()
 version = providers.gradleProperty("VERSION_NAME").get()
 
-val generateYtEjsNativeScripts =
-    tasks.register("generateYtEjsNativeScripts") {
-        val scripts = layout.projectDirectory.dir("src/commonMain/resources/yt_ejs")
-        val out = layout.buildDirectory.dir("generated/ytEjsNative")
+val generateDiscoEjsNativeScripts =
+    tasks.register("generateDiscoEjsNativeScripts") {
+        val scripts = layout.projectDirectory.dir("src/commonMain/resources/disco_ejs")
+        val out = layout.buildDirectory.dir("generated/discoEjsNative")
         inputs.dir(scripts)
         outputs.dir(out)
         doLast {
-            val names = listOf("yt.solver.core.min.js", "yt.solver.lib.min.js")
+            val names = listOf("disco.solver.core.min.js", "disco.solver.lib.min.js")
             val entries =
                 names.joinToString(",\n") { name ->
                     val b64 = Base64.getEncoder().encodeToString(scripts.file(name).asFile.readBytes())
@@ -36,7 +36,7 @@ val generateYtEjsNativeScripts =
                     .asFile
                     .resolve("com/omarkarimli/innerdiscox/cipher")
                     .apply { mkdirs() }
-            dir.resolve("YtEjsScriptLoader.native.kt").writeText(
+            dir.resolve("DiscoEjsScriptLoader.native.kt").writeText(
                 listOf(
                     "package com.omarkarimli.innerdiscox.cipher",
                     "",
@@ -44,7 +44,7 @@ val generateYtEjsNativeScripts =
                     "import kotlin.io.encoding.ExperimentalEncodingApi",
                     "",
                     "@OptIn(ExperimentalEncodingApi::class)",
-                    "internal actual fun readYtEjsSolverScript(fileName: String): String =",
+                    "internal actual fun readDiscoEjsSolverScript(fileName: String): String =",
                     "    Base64.decode(EMBEDDED[fileName] ?: error(\"Missing embedded script: \$fileName\")).decodeToString()",
                     "",
                     "private val EMBEDDED =",
@@ -102,7 +102,7 @@ kotlin {
         androidMain.get().dependsOn(jvmCommonMain)
         getByName("desktopMain").dependsOn(jvmCommonMain)
         nativeMain {
-            kotlin.srcDir(generateYtEjsNativeScripts)
+            kotlin.srcDir(generateDiscoEjsNativeScripts)
         }
         getByName("desktopTest").dependencies {
             implementation(libs.junit4)
@@ -156,7 +156,7 @@ mavenPublishing {
     pom {
         name.set("InnerDiscoX")
         description.set(
-            "Extended Android and JVM Kotlin Multiplatform client for YouTube's InnerDisco APIs, SABR audio/video, and player cipher deobfuscation.",
+            "Extended Android and JVM Kotlin Multiplatform client for Disco's InnerDisco APIs, SABR audio/video, and player cipher deobfuscation.",
         )
         inceptionYear.set("2026")
         url.set("https://github.com/omarkarimli/innerdiscox")

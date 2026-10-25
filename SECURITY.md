@@ -7,7 +7,7 @@ Until the first stable release, security fixes are provided on the latest
 
 ## Reporting a Vulnerability
 
-Do not open a public issue for a vulnerability or include live YouTube cookies,
+Do not open a public issue for a vulnerability or include live Disco cookies,
 tokens, signed URLs, account identifiers, or captured authenticated traffic in
 any report.
 
@@ -25,5 +25,5 @@ Security issues include credential disclosure, authenticated request routing to
 untrusted hosts, unbounded parsing of remote data, unsafe player-script
 execution boundaries, and bypasses of protocol size limits.
 
-Failures caused solely by upstream changes to undocumented YouTube APIs are
+Failures caused solely by upstream changes to undocumented Disco APIs are
 normally compatibility bugs rather than vulnerabilities.

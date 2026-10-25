@@ -3,7 +3,7 @@ package com.omarkarimli.innerdiscox.utils
 import com.omarkarimli.innerdiscox.models.WatchEndpoint
 import io.ktor.http.Url
 
-object YouTubeUrlParser {
+object DiscoUrlParser {
     sealed class ParsedUrl {
         abstract val id: String
 
@@ -24,13 +24,13 @@ object YouTubeUrlParser {
         ) : ParsedUrl()
     }
 
-    private val youtubeHosts = setOf("youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com", "www.music.youtube.com")
+    private val discoHosts = setOf("youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com", "www.music.youtube.com")
     private val musicHosts = setOf("music.youtube.com", "www.music.youtube.com")
     private val videoId = Regex("[a-zA-Z0-9_-]{11}")
     private val playlistId = Regex("[a-zA-Z0-9_-]+")
     private val artistId = Regex("[a-zA-Z0-9_-]+")
 
-    fun isYouTubeUrl(text: String): Boolean = parse(text) != null
+    fun isDiscoUrl(text: String): Boolean = parse(text) != null
 
     fun parse(url: String): ParsedUrl? {
         val parsed = parseUrl(url) ?: return null
@@ -41,7 +41,7 @@ object YouTubeUrlParser {
             val id = path.removePrefix("/").takeIf { it.matches(videoId) }
             return id?.let(::video)
         }
-        if (host !in youtubeHosts) return null
+        if (host !in discoHosts) return null
 
         if (path == "/watch") {
             return parsed.parameters["v"]?.takeIf { it.matches(videoId) }?.let(::video)

@@ -1,6 +1,6 @@
 package com.omarkarimli.innerdiscox.sabr
 
-import com.omarkarimli.innerdiscox.models.YouTubeClient
+import com.omarkarimli.innerdiscox.models.DiscoClient
 import com.omarkarimli.innerdiscox.models.response.PlayerResponse
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -324,10 +324,10 @@ class SabrCoreTest {
                     ),
             )
 
-        val bootstrap = response.toSabrBootstrap(YouTubeClient.MWEB_SABR, audio)
+        val bootstrap = response.toSabrBootstrap(DiscoClient.MWEB_SABR, audio)
 
         assertEquals("https://m.youtube.com", bootstrap.requestOrigin)
-        assertEquals(bootstrap.requestOrigin, sabrRequestOrigin(YouTubeClient.MWEB_SABR.clientName))
+        assertEquals(bootstrap.requestOrigin, sabrRequestOrigin(DiscoClient.MWEB_SABR.clientName))
     }
 
     @Test

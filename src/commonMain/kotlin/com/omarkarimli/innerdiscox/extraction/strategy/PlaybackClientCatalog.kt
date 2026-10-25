@@ -1,12 +1,12 @@
 package com.omarkarimli.innerdiscox.extraction.strategy
 
+import com.omarkarimli.innerdiscox.models.DiscoClient
 import com.omarkarimli.innerdiscox.models.PoTokenBinding
-import com.omarkarimli.innerdiscox.models.YouTubeClient
 
 data class PlaybackClientOption(
     val id: String,
     val displayName: String,
-    val client: YouTubeClient,
+    val client: DiscoClient,
     val manifest: PlaybackClientManifest,
 )
 
@@ -19,8 +19,8 @@ object PlaybackClientCatalog {
     private const val SOURCE_ANDROID_SABR_BENCHMARK = "Android SABR benchmark (2026-08-20)"
     private const val SOURCE_DEVICE_CLIENT_BENCHMARK = "Android device client benchmark (2026-10-14)"
     private const val SOURCE_YTDLP = "yt-dlp client inventory"
-    private const val SOURCE_YOUTUBE_JS = "YouTube.js client constants"
-    private const val SOURCE_HISTORICAL_CLIENTS = "YouTube-Internal-Clients survey (2022)"
+    private const val SOURCE_DISCO_JS = "Disco.js client constants"
+    private const val SOURCE_HISTORICAL_CLIENTS = "Disco-Internal-Clients survey (2022)"
     private const val SOURCE_PYTUBEFIX = "pytubefix innerdisco.py (b6521f09)"
 
     private val webProviders =
@@ -94,7 +94,7 @@ object PlaybackClientCatalog {
         listOf(
             manifest(
                 id = "VISIONOS",
-                client = YouTubeClient.VISIONOS,
+                client = DiscoClient.VISIONOS,
                 displayName = "visionOS 1.02",
                 lifecycle = ClientLifecycle.UNRELEASED,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -116,7 +116,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "VISIONOS_0_1",
-                client = YouTubeClient.VISIONOS_0_1,
+                client = DiscoClient.VISIONOS_0_1,
                 displayName = "visionOS 0.1",
                 lifecycle = ClientLifecycle.DEPRECATED,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -135,7 +135,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "ANDROID_VR_1_65_10",
-                client = YouTubeClient.ANDROID_VR_1_65_10,
+                client = DiscoClient.ANDROID_VR_1_65_10,
                 displayName = "Android VR 1.65.10",
                 lifecycle = ClientLifecycle.STABLE,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -143,14 +143,14 @@ object PlaybackClientCatalog {
                 transports = setOf(PlaybackTransport.DIRECT),
                 content = vrContent(),
                 benchmarkContent = globallyUnusableContent(),
-                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_DISCO_JS),
                 notes =
                     "A live anonymous visitor request resolved, but every audio itag reached a CDN 403 after " +
                         "1 MiB. Kept for explicit benchmark probing only.",
             ),
             manifest(
                 id = "ANDROID_VR_1_43_32",
-                client = YouTubeClient.ANDROID_VR_1_43_32,
+                client = DiscoClient.ANDROID_VR_1_43_32,
                 displayName = "Android VR 1.43.32",
                 lifecycle = ClientLifecycle.DEPRECATED,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -165,7 +165,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "ANDROID_VR_NO_AUTH",
-                client = YouTubeClient.ANDROID_VR_NO_AUTH,
+                client = DiscoClient.ANDROID_VR_NO_AUTH,
                 displayName = "Android VR 1.61.48 (minimal)",
                 lifecycle = ClientLifecycle.DEPRECATED,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -180,7 +180,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "ANDROID_VR_1_61_48",
-                client = YouTubeClient.ANDROID_VR_1_61_48,
+                client = DiscoClient.ANDROID_VR_1_61_48,
                 displayName = "Android VR 1.61.48",
                 lifecycle = ClientLifecycle.DEPRECATED,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -198,7 +198,7 @@ object PlaybackClientCatalog {
              *
             manifest(
                 id = "TVHTML5",
-                client = YouTubeClient.TVHTML5,
+                client = DiscoClient.TVHTML5,
                 displayName = "TV HTML5",
                 lifecycle = ClientLifecycle.STABLE,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -208,13 +208,13 @@ object PlaybackClientCatalog {
                 poTokens = ClientPoTokenCapabilities(player = webPlayerNotRequired, gvs = webGvsOptional),
                 request = webRequest,
                 content = normalWebContent,
-                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_DISCO_JS),
                 notes = "Player responses contained no direct or HLS audio usable by this profile.",
             ),
              */
             manifest(
                 id = "TVHTML5_DOWNGRADED",
-                client = YouTubeClient.TVHTML5_DOWNGRADED,
+                client = DiscoClient.TVHTML5_DOWNGRADED,
                 displayName = "TV HTML5 Downgraded",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -236,12 +236,12 @@ object PlaybackClientCatalog {
                 benchmarkContent = globallyUnusableContent(),
                 evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP),
                 notes =
-                    "Matches the current yt-dlp profile but YouTube returned UNPLAYABLE in August 2026 probes. " +
+                    "Matches the current yt-dlp profile but Disco returned UNPLAYABLE in August 2026 probes. " +
                         "Retained for explicit compatibility testing only.",
             ),
             manifest(
                 id = "WEB_REMIX",
-                client = YouTubeClient.WEB_REMIX,
+                client = DiscoClient.WEB_REMIX,
                 displayName = "Web Remix",
                 lifecycle = ClientLifecycle.STABLE,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -251,12 +251,12 @@ object PlaybackClientCatalog {
                 poTokens = ClientPoTokenCapabilities(player = webPlayerNotRequired, gvs = webGvsRequired),
                 request = webRequest,
                 content = validatedRestrictedWebContent,
-                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_DISCO_JS),
                 notes = "Passed normal, made-for-kids, and age-restricted playback with backward and forward seeks.",
             ),
             manifest(
                 id = "WEB_CREATOR",
-                client = YouTubeClient.WEB_CREATOR,
+                client = DiscoClient.WEB_CREATOR,
                 displayName = "Web Creator",
                 lifecycle = ClientLifecycle.STABLE,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -266,14 +266,14 @@ object PlaybackClientCatalog {
                 poTokens = ClientPoTokenCapabilities(player = webPlayerNotRequired, gvs = webGvsRequired),
                 request = webRequest,
                 content = validatedRestrictedWebContent,
-                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_DISCO_JS),
                 notes =
                     "Passed normal, made-for-kids, and age-restricted playback with backward and forward seeks. " +
                         "Requires a signed-in account.",
             ),
             manifest(
                 id = "TVHTML5_SIMPLY",
-                client = YouTubeClient.TVHTML5_SIMPLY,
+                client = DiscoClient.TVHTML5_SIMPLY,
                 displayName = "TV HTML5 Simply",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -298,7 +298,7 @@ object PlaybackClientCatalog {
                         explicit = CapabilitySupport.LIMITED,
                         kids = CapabilitySupport.SUPPORTED,
                     ),
-                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_DISCO_JS),
                 notes =
                     "The two-token HLS path passed both normal samples, both made-for-kids " +
                         "samples, and one explicit sample with sustained playback and bidirectional seeks.",
@@ -308,7 +308,7 @@ object PlaybackClientCatalog {
              *
             manifest(
                 id = "WEB_SAFARI",
-                client = YouTubeClient.WEB_SAFARI,
+                client = DiscoClient.WEB_SAFARI,
                 displayName = "Web Safari",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -326,7 +326,7 @@ object PlaybackClientCatalog {
              */
             manifest(
                 id = "WEB_EMBEDDED_PLAYER",
-                client = YouTubeClient.WEB_EMBEDDED_PLAYER,
+                client = DiscoClient.WEB_EMBEDDED_PLAYER,
                 displayName = "Web Embedded",
                 lifecycle = ClientLifecycle.STABLE,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -353,7 +353,7 @@ object PlaybackClientCatalog {
                         explicit = CapabilitySupport.UNSUPPORTED,
                         kids = CapabilitySupport.SUPPORTED,
                     ),
-                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_DISCO_JS),
                 notes =
                     "Normal and made-for-kids playback passed sustained playback and both seek directions after " +
                         "fetching per-video encryptedHostFlags; age-restricted media was rejected.",
@@ -363,7 +363,7 @@ object PlaybackClientCatalog {
              *
             manifest(
                 id = "VISIONOS_SABR",
-                client = YouTubeClient.VISIONOS_SABR,
+                client = DiscoClient.VISIONOS_SABR,
                 displayName = "visionOS 1.02 (SABR)",
                 lifecycle = ClientLifecycle.UNRELEASED,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -376,7 +376,7 @@ object PlaybackClientCatalog {
              */
             manifest(
                 id = "ANDROID_VR_SABR",
-                client = YouTubeClient.ANDROID_VR_SABR,
+                client = DiscoClient.ANDROID_VR_SABR,
                 displayName = "Android VR 1.65.10 (SABR)",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -395,7 +395,7 @@ object PlaybackClientCatalog {
              *
             manifest(
                 id = "TVHTML5_SABR",
-                client = YouTubeClient.TVHTML5_SABR,
+                client = DiscoClient.TVHTML5_SABR,
                 displayName = "TV HTML5 (SABR)",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -411,7 +411,7 @@ object PlaybackClientCatalog {
              */
             manifest(
                 id = "WEB_REMIX_SABR",
-                client = YouTubeClient.WEB_REMIX_SABR,
+                client = DiscoClient.WEB_REMIX_SABR,
                 displayName = "Web Remix (SABR)",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -439,7 +439,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "WEB_SABR",
-                client = YouTubeClient.WEB_SABR,
+                client = DiscoClient.WEB_SABR,
                 displayName = "Web (SABR)",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -456,7 +456,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "TVHTML5_SIMPLY_SABR",
-                client = YouTubeClient.TVHTML5_SIMPLY_SABR,
+                client = DiscoClient.TVHTML5_SIMPLY_SABR,
                 displayName = "TV HTML5 Simply (SABR)",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -489,7 +489,7 @@ object PlaybackClientCatalog {
              *
             manifest(
                 id = "ANDROID",
-                client = YouTubeClient.ANDROID,
+                client = DiscoClient.ANDROID,
                 displayName = "Android 21.26.364",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -497,7 +497,7 @@ object PlaybackClientCatalog {
                 transports = setOf(PlaybackTransport.DIRECT, PlaybackTransport.HLS),
                 poTokens = ClientPoTokenCapabilities(player = androidPlayerOptional, gvs = androidGvsRequired),
                 content = nativeDirectUnusableContent(),
-                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_DISCO_JS),
                 notes =
                     "Normal and made-for-kids requests return SABR-only metadata without direct URLs, while " +
                         "age-restricted media requires login. This direct profile is not currently usable.",
@@ -507,7 +507,7 @@ object PlaybackClientCatalog {
              *
             manifest(
                 id = "ANDROID_SABR",
-                client = YouTubeClient.ANDROID_SABR,
+                client = DiscoClient.ANDROID_SABR,
                 displayName = "Android 21.26.364 (SABR)",
                 lifecycle = ClientLifecycle.CANARY,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -521,7 +521,7 @@ object PlaybackClientCatalog {
              */
             manifest(
                 id = "MWEB",
-                client = YouTubeClient.MWEB,
+                client = DiscoClient.MWEB,
                 displayName = "Mobile Web",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -531,14 +531,14 @@ object PlaybackClientCatalog {
                 poTokens = ClientPoTokenCapabilities(player = webPlayerNotRequired, gvs = pageBoundGvsRequired),
                 request = webRequest,
                 content = validatedProbeWebContent,
-                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_DISCO_JS),
                 notes =
                     "Page-bound GVS tokens passed normal, made-for-kids, and age-restricted playback. " +
                         "Fresh tokenized URLs can return several transient HTTP 403 responses before becoming usable.",
             ),
             manifest(
                 id = "MWEB_SABR",
-                client = YouTubeClient.MWEB_SABR,
+                client = DiscoClient.MWEB_SABR,
                 displayName = "Mobile Web (SABR)",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -556,7 +556,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "WEB_SAFARI_SABR",
-                client = YouTubeClient.WEB_SAFARI_SABR,
+                client = DiscoClient.WEB_SAFARI_SABR,
                 displayName = "Web Safari (SABR)",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -576,7 +576,7 @@ object PlaybackClientCatalog {
              *
             manifest(
                 id = "IOS",
-                client = YouTubeClient.IOS,
+                client = DiscoClient.IOS,
                 displayName = "iOS 21.26.4",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -584,7 +584,7 @@ object PlaybackClientCatalog {
                 transports = setOf(PlaybackTransport.DIRECT, PlaybackTransport.HLS),
                 poTokens = ClientPoTokenCapabilities(player = iosPlayerOptional, gvs = iosGvsRequired),
                 content = nativeDirectUnusableContent(),
-                evidence = setOf(SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_PLAYBACK_MATRIX, SOURCE_YTDLP, SOURCE_DISCO_JS),
                 notes =
                     "Normal and made-for-kids requests return SABR-only metadata without direct URLs. " +
                         "Age-restricted media requires login; no iOS attestation provider is available.",
@@ -594,7 +594,7 @@ object PlaybackClientCatalog {
              *
             manifest(
                 id = "IOS_SABR",
-                client = YouTubeClient.IOS_SABR,
+                client = DiscoClient.IOS_SABR,
                 displayName = "iOS 21.26.4 (SABR)",
                 lifecycle = ClientLifecycle.CANARY,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -609,7 +609,7 @@ object PlaybackClientCatalog {
              *
             manifest(
                 id = "IPADOS",
-                client = YouTubeClient.IPADOS,
+                client = DiscoClient.IPADOS,
                 displayName = "iPadOS 17.7.10",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -623,11 +623,11 @@ object PlaybackClientCatalog {
                         "media requires login. Historical direct probes failed sequential GVS ranges around 1 MiB.",
             ),
              *
-             * Disabled after YouTube returned an unsupported-application error for all three cases.
+             * Disabled after Disco returned an unsupported-application error for all three cases.
              *
             manifest(
                 id = "TVHTML5_SIMPLY_EMBEDDED_PLAYER",
-                client = YouTubeClient.TVHTML5_SIMPLY_EMBEDDED_PLAYER,
+                client = DiscoClient.TVHTML5_SIMPLY_EMBEDDED_PLAYER,
                 displayName = "TV HTML5 Simply Embedded",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.MANUAL_ONLY,
@@ -641,13 +641,13 @@ object PlaybackClientCatalog {
                         embedded = true,
                     ),
                 content = globallyUnusableContent(),
-                evidence = setOf(SOURCE_PLAYBACK_MATRIX, SOURCE_YOUTUBE_JS),
-                notes = "YouTube reports this application and device as no longer supported.",
+                evidence = setOf(SOURCE_PLAYBACK_MATRIX, SOURCE_DISCO_JS),
+                notes = "Disco reports this application and device as no longer supported.",
             ),
              */
             manifest(
                 id = "WEB_KIDS",
-                client = YouTubeClient.WEB_KIDS,
+                client = DiscoClient.WEB_KIDS,
                 displayName = "Web Kids",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -663,14 +663,14 @@ object PlaybackClientCatalog {
                         live = CapabilitySupport.UNSUPPORTED,
                         uploads = CapabilitySupport.UNSUPPORTED,
                     ),
-                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_DISCO_JS),
                 notes =
                     "Made-for-kids playback passed 70 seconds plus backward and forward seeks; normal and " +
                         "age-restricted playback are unavailable.",
             ),
             manifest(
                 id = "TVHTML5",
-                client = YouTubeClient.TVHTML5,
+                client = DiscoClient.TVHTML5,
                 displayName = "TV HTML5",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -685,7 +685,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "WEB_SAFARI",
-                client = YouTubeClient.WEB_SAFARI,
+                client = DiscoClient.WEB_SAFARI,
                 displayName = "Web Safari",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -700,7 +700,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "VISIONOS_SABR",
-                client = YouTubeClient.VISIONOS_SABR,
+                client = DiscoClient.VISIONOS_SABR,
                 displayName = "visionOS 1.02 (SABR)",
                 lifecycle = ClientLifecycle.UNRELEASED,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -723,7 +723,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "TVHTML5_SABR",
-                client = YouTubeClient.TVHTML5_SABR,
+                client = DiscoClient.TVHTML5_SABR,
                 displayName = "TV HTML5 (SABR)",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -738,7 +738,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "ANDROID",
-                client = YouTubeClient.ANDROID,
+                client = DiscoClient.ANDROID,
                 displayName = "Android 21.26.364",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -746,12 +746,12 @@ object PlaybackClientCatalog {
                 transports = setOf(PlaybackTransport.DIRECT, PlaybackTransport.HLS),
                 poTokens = ClientPoTokenCapabilities(player = androidPlayerOptional, gvs = androidGvsRequired),
                 content = nativeDirectUnusableContent(),
-                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_YTDLP, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_ANDROID_BENCHMARK, SOURCE_YTDLP, SOURCE_DISCO_JS),
                 notes = "Previous responses exposed SABR-only media and require unavailable DroidGuard attestation.",
             ),
             manifest(
                 id = "ANDROID_SABR",
-                client = YouTubeClient.ANDROID_SABR,
+                client = DiscoClient.ANDROID_SABR,
                 displayName = "Android 21.26.364 (SABR)",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -767,7 +767,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "IOS",
-                client = YouTubeClient.IOS,
+                client = DiscoClient.IOS,
                 displayName = "iOS 21.26.4",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -775,12 +775,12 @@ object PlaybackClientCatalog {
                 transports = setOf(PlaybackTransport.DIRECT, PlaybackTransport.HLS),
                 poTokens = ClientPoTokenCapabilities(player = iosPlayerOptional, gvs = iosGvsRequired),
                 content = nativeDirectUnusableContent(),
-                evidence = setOf(SOURCE_YTDLP, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_YTDLP, SOURCE_DISCO_JS),
                 notes = "Previous responses exposed SABR-only media and require unavailable iOS attestation.",
             ),
             manifest(
                 id = "IOS_SABR",
-                client = YouTubeClient.IOS_SABR,
+                client = DiscoClient.IOS_SABR,
                 displayName = "iOS 21.26.4 (SABR)",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -793,7 +793,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "IPADOS",
-                client = YouTubeClient.IPADOS,
+                client = DiscoClient.IPADOS,
                 displayName = "iPadOS 17.7.10",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -806,7 +806,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "TVHTML5_SIMPLY_EMBEDDED_PLAYER",
-                client = YouTubeClient.TVHTML5_SIMPLY_EMBEDDED_PLAYER,
+                client = DiscoClient.TVHTML5_SIMPLY_EMBEDDED_PLAYER,
                 displayName = "TV HTML5 Simply Embedded",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -815,12 +815,12 @@ object PlaybackClientCatalog {
                 poTokens = ClientPoTokenCapabilities(player = webSessionPlayerRequired, gvs = webGvsRequired),
                 request = webRequest.copy(webView = WebViewRequirement.REQUIRED_TOKEN_MINTING, cookies = false, embedded = true),
                 content = globallyUnusableContent(),
-                evidence = setOf(SOURCE_YOUTUBE_JS),
-                notes = "YouTube previously reported this application and device as unsupported.",
+                evidence = setOf(SOURCE_DISCO_JS),
+                notes = "Disco previously reported this application and device as unsupported.",
             ),
             manifest(
                 id = "ANDROID_MUSIC",
-                client = YouTubeClient.ANDROID_MUSIC,
+                client = DiscoClient.ANDROID_MUSIC,
                 displayName = "Android Music 5.34.51",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -828,12 +828,12 @@ object PlaybackClientCatalog {
                 transports = setOf(PlaybackTransport.DIRECT),
                 poTokens = ClientPoTokenCapabilities(player = androidPlayerRequired, gvs = androidGvsRequired),
                 content = globallyUnusableContent(),
-                evidence = setOf(SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_DISCO_JS),
                 notes = "Previous player requests returned HTTP 400 FAILED_PRECONDITION.",
             ),
             manifest(
                 id = "ANDROID_CREATOR",
-                client = YouTubeClient.ANDROID_CREATOR,
+                client = DiscoClient.ANDROID_CREATOR,
                 displayName = "Android Studio 25.03.101",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -841,7 +841,7 @@ object PlaybackClientCatalog {
                 authentication = AuthenticationPolicy.REQUIRED,
                 transports = setOf(PlaybackTransport.DIRECT),
                 content = globallyUnusableContent(),
-                evidence = setOf(SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_DISCO_JS),
                 notes = "Previous player requests returned HTTP 400 INVALID_ARGUMENT.",
             ),
             /*
@@ -849,7 +849,7 @@ object PlaybackClientCatalog {
              *
             manifest(
                 id = "ANDROID_MUSIC",
-                client = YouTubeClient.ANDROID_MUSIC,
+                client = DiscoClient.ANDROID_MUSIC,
                 displayName = "Android Music 5.34.51",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -857,7 +857,7 @@ object PlaybackClientCatalog {
                 transports = setOf(PlaybackTransport.DIRECT),
                 poTokens = ClientPoTokenCapabilities(player = androidPlayerRequired, gvs = androidGvsRequired),
                 content = globallyUnusableContent(),
-                evidence = setOf(SOURCE_PLAYBACK_MATRIX, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_PLAYBACK_MATRIX, SOURCE_DISCO_JS),
                 notes = "Current player requests return HTTP 400 FAILED_PRECONDITION for every benchmark probe.",
             ),
              *
@@ -865,7 +865,7 @@ object PlaybackClientCatalog {
              *
             manifest(
                 id = "ANDROID_CREATOR",
-                client = YouTubeClient.ANDROID_CREATOR,
+                client = DiscoClient.ANDROID_CREATOR,
                 displayName = "Android Studio 25.03.101",
                 lifecycle = ClientLifecycle.BROKEN,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -873,13 +873,13 @@ object PlaybackClientCatalog {
                 authentication = AuthenticationPolicy.REQUIRED,
                 transports = setOf(PlaybackTransport.DIRECT),
                 content = globallyUnusableContent(),
-                evidence = setOf(SOURCE_PLAYBACK_MATRIX, SOURCE_YOUTUBE_JS),
-                notes = "Both 25.03.101 and the YouTube.js 22.43.101 identity return HTTP 400.",
+                evidence = setOf(SOURCE_PLAYBACK_MATRIX, SOURCE_DISCO_JS),
+                notes = "Both 25.03.101 and the Disco.js 22.43.101 identity return HTTP 400.",
             ),
              */
             manifest(
                 id = "IOS_MUSIC",
-                client = YouTubeClient.IOS_MUSIC,
+                client = DiscoClient.IOS_MUSIC,
                 displayName = "iOS Music probe",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -891,7 +891,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "ANDROID_KIDS",
-                client = YouTubeClient.ANDROID_KIDS,
+                client = DiscoClient.ANDROID_KIDS,
                 displayName = "Android Kids",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.AUTOMATIC,
@@ -914,7 +914,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "ANDROID_PRODUCER",
-                client = YouTubeClient.ANDROID_PRODUCER,
+                client = DiscoClient.ANDROID_PRODUCER,
                 displayName = "Android Producer probe",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -926,7 +926,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "MEDIA_CONNECT_FRONTEND",
-                client = YouTubeClient.MEDIA_CONNECT_FRONTEND,
+                client = DiscoClient.MEDIA_CONNECT_FRONTEND,
                 displayName = "Media Connect Frontend probe",
                 lifecycle = ClientLifecycle.EXPERIMENTAL,
                 selectionMode = ClientSelectionMode.PROBE_ONLY,
@@ -938,7 +938,7 @@ object PlaybackClientCatalog {
             ),
             manifest(
                 id = "WEB",
-                client = YouTubeClient.WEB,
+                client = DiscoClient.WEB,
                 displayName = "Web API",
                 lifecycle = ClientLifecycle.STABLE,
                 selectionMode = ClientSelectionMode.API_ONLY,
@@ -948,7 +948,7 @@ object PlaybackClientCatalog {
                 poTokens = ClientPoTokenCapabilities(player = webPlayerNotRequired, gvs = webGvsRequired),
                 request = webRequest,
                 content = normalWebContent,
-                evidence = setOf(SOURCE_YTDLP, SOURCE_YOUTUBE_JS),
+                evidence = setOf(SOURCE_YTDLP, SOURCE_DISCO_JS),
                 notes = "Used for metadata/transcript calls. Playback uses the explicit WEB_SABR profile.",
             ),
         ).also(::validateInventory)
@@ -980,7 +980,7 @@ object PlaybackClientCatalog {
 
     fun findManifest(id: String): PlaybackClientManifest? = manifests.firstOrNull { it.id == id }
 
-    fun findManifest(client: YouTubeClient): PlaybackClientManifest? = manifests.firstOrNull { it.client == client }
+    fun findManifest(client: DiscoClient): PlaybackClientManifest? = manifests.firstOrNull { it.client == client }
 
     fun manifestIdFromProfileId(profileId: String?): String? =
         profileId
@@ -996,7 +996,7 @@ object PlaybackClientCatalog {
             manifest.client.legacyProfileId(usedPoToken),
         )
 
-    private fun YouTubeClient.legacyProfileId(usedPoToken: Boolean): String {
+    private fun DiscoClient.legacyProfileId(usedPoToken: Boolean): String {
         val base =
             buildString {
                 append(clientName)
@@ -1009,7 +1009,7 @@ object PlaybackClientCatalog {
 
     private fun manifest(
         id: String,
-        client: YouTubeClient,
+        client: DiscoClient,
         displayName: String,
         lifecycle: ClientLifecycle,
         selectionMode: ClientSelectionMode,
@@ -1100,7 +1100,7 @@ object PlaybackClientCatalog {
     private fun validateInventory(manifests: List<PlaybackClientManifest>) {
         require(manifests.map { it.id }.distinct().size == manifests.size) { "Playback client manifest IDs must be unique" }
         require(manifests.map { it.client }.distinct().size == manifests.size) {
-            "Every manifest must have a distinguishable YouTubeClient request profile"
+            "Every manifest must have a distinguishable DiscoClient request profile"
         }
     }
 }

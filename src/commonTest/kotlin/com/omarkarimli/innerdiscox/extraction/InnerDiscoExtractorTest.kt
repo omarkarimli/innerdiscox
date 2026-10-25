@@ -1,7 +1,7 @@
 package com.omarkarimli.innerdiscox.extraction
 
 import com.omarkarimli.innerdiscox.InnerDisco
-import com.omarkarimli.innerdiscox.cipher.YouTubeCipherService
+import com.omarkarimli.innerdiscox.cipher.DiscoCipherService
 import com.omarkarimli.innerdiscox.extraction.strategy.ClientFailureKind
 import com.omarkarimli.innerdiscox.extraction.strategy.ClientFallbackStrategy
 import com.omarkarimli.innerdiscox.extraction.strategy.ClientHealthMonitor
@@ -13,7 +13,7 @@ import com.omarkarimli.innerdiscox.extraction.strategy.PlaybackClientCatalog
 import com.omarkarimli.innerdiscox.extraction.strategy.PlaybackTransport
 import com.omarkarimli.innerdiscox.extraction.strategy.PoTokenProviderKind
 import com.omarkarimli.innerdiscox.extraction.strategy.SelectedClient
-import com.omarkarimli.innerdiscox.models.YouTubeClient
+import com.omarkarimli.innerdiscox.models.DiscoClient
 import com.omarkarimli.innerdiscox.models.response.PlayerResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -268,7 +268,7 @@ class InnerDiscoExtractorTest {
                     }
                 }
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -302,7 +302,7 @@ class InnerDiscoExtractorTest {
             val innerDisco = InnerDisco(client, retryDelay = {})
             val authenticatedStarted = CompletableDeferred<Unit>()
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -341,7 +341,7 @@ class InnerDiscoExtractorTest {
             val release = CompletableDeferred<Unit>()
             var calls = 0
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -378,7 +378,7 @@ class InnerDiscoExtractorTest {
             val client = jsonClient(VIDEO_RESPONSE)
             var embedCalls = 0
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -1049,7 +1049,7 @@ class InnerDiscoExtractorTest {
         runBlocking {
             val client = jsonClient(SABR_RESPONSE)
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     var calls = 0
 
                     override suspend fun fetchConfig(
@@ -1120,7 +1120,7 @@ class InnerDiscoExtractorTest {
                         val visitor = request.headers["X-Goog-Visitor-Id"]
                         visitors += visitor
                         respond(
-                            if (visitor == "config-visitor" && request.headers["X-YouTube-Client-Version"] == "0.1") {
+                            if (visitor == "config-visitor" && request.headers["X-Disco-Client-Version"] == "0.1") {
                                 DIRECT_RESPONSE
                             } else {
                                 UNPLAYABLE_RESPONSE
@@ -1147,7 +1147,7 @@ class InnerDiscoExtractorTest {
                 }
             val director = PlayerClientDirector(innerDisco, ContentAwareFallbackStrategy(), NoTokenProvider, health)
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     var calls = 0
 
                     override suspend fun fetchConfig(
@@ -1266,7 +1266,7 @@ class InnerDiscoExtractorTest {
                     it.visitorData = "synthetic-visitor"
                 }
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -1306,7 +1306,7 @@ class InnerDiscoExtractorTest {
                 }
             val innerDisco = InnerDisco(client, retryDelay = {}).also { it.cookie = "SAPISID=synthetic-session" }
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -1350,7 +1350,7 @@ class InnerDiscoExtractorTest {
                 }
             val innerDisco = InnerDisco(client, retryDelay = {}).also { it.cookie = "SAPISID=synthetic-session" }
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -1389,7 +1389,7 @@ class InnerDiscoExtractorTest {
                 }
             val innerDisco = InnerDisco(client, retryDelay = {}).also { it.cookie = "SAPISID=synthetic-session" }
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -1433,7 +1433,7 @@ class InnerDiscoExtractorTest {
                 }
             val innerDisco = InnerDisco(client, retryDelay = {}).also { it.cookie = "SAPISID=synthetic-session" }
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -1453,7 +1453,7 @@ class InnerDiscoExtractorTest {
                     ).extract("video", ContentHints().withPremium(), audioQuality = AudioQuality.HIGH)
 
                 assertNotNull(stream)
-                assertTrue(stream.clientName != YouTubeClient.VISIONOS.clientName)
+                assertTrue(stream.clientName != DiscoClient.VISIONOS.clientName)
                 assertEquals(141, stream.itag)
                 assertEquals(listOf(true), configModes)
                 assertEquals(1, playerRequests)
@@ -1534,7 +1534,7 @@ class InnerDiscoExtractorTest {
                 }
             try {
                 val innerDisco = InnerDisco(client, retryDelay = {})
-                InnerDiscoExtractor(CountingParser(), YouTubeCipherService(client), innerDisco, clientHealthMonitor = health)
+                InnerDiscoExtractor(CountingParser(), DiscoCipherService(client), innerDisco, clientHealthMonitor = health)
                     .extract("video", ContentHints())
                 assertTrue(health.scored > 0)
             } finally {
@@ -1609,7 +1609,7 @@ class InnerDiscoExtractorTest {
             val fallback =
                 object : com.omarkarimli.innerdiscox.extraction.strategy.ClientFallbackStrategy {
                     override fun resolveClients(hints: ContentHints) =
-                        List(PlaybackClientCatalog.automaticManifests.size * 2) { YouTubeClient.VISIONOS }
+                        List(PlaybackClientCatalog.automaticManifests.size * 2) { DiscoClient.VISIONOS }
                 }
             try {
                 val extractor = makeExtractor(client, InnerDisco(client, retryDelay = {}), parser, fallback)
@@ -1645,7 +1645,7 @@ class InnerDiscoExtractorTest {
                     }
                 }
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -1715,7 +1715,7 @@ class InnerDiscoExtractorTest {
             val innerDisco = InnerDisco(client, retryDelay = {}).also { it.cookie = "SAPISID=session-cookie" }
             val modes = mutableListOf<Boolean>()
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -1754,7 +1754,7 @@ class InnerDiscoExtractorTest {
             val innerDisco = InnerDisco(client, retryDelay = {})
             var calls = 0
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -1786,7 +1786,7 @@ class InnerDiscoExtractorTest {
         }
 
     @Test
-    fun uploadedYoutubeMediaUsesLoginCookie() =
+    fun uploadedDiscoMediaUsesLoginCookie() =
         runBlocking {
             val response = DIRECT_RESPONSE.replace("https://r.googlevideo.com", "https://rr1.c.youtube.com")
             val client = jsonClient(response)
@@ -1801,7 +1801,7 @@ class InnerDiscoExtractorTest {
         }
 
     @Test
-    fun uploadedYoutubeMediaRejectsNonPlaybackPath() =
+    fun uploadedDiscoMediaRejectsNonPlaybackPath() =
         runBlocking {
             val response = DIRECT_RESPONSE.replace("https://r.googlevideo.com/videoplayback", "https://rr1.c.youtube.com/watch")
             val client = jsonClient(response)
@@ -1960,10 +1960,10 @@ class InnerDiscoExtractorTest {
             val sabrManifest = checkNotNull(PlaybackClientCatalog.findManifest("WEB_REMIX_SABR"))
             val selectedClients =
                 listOf(
-                    YouTubeClient.VISIONOS,
-                    YouTubeClient.VISIONOS_0_1,
-                    YouTubeClient.ANDROID_VR_1_65_10,
-                    YouTubeClient.TVHTML5_SIMPLY,
+                    DiscoClient.VISIONOS,
+                    DiscoClient.VISIONOS_0_1,
+                    DiscoClient.ANDROID_VR_1_65_10,
+                    DiscoClient.TVHTML5_SIMPLY,
                 ).map(::SelectedClient) + SelectedClient(sabrManifest.client, sabrManifest)
             val fallback =
                 object : ClientFallbackStrategy {
@@ -1986,7 +1986,7 @@ class InnerDiscoExtractorTest {
             val innerDisco = InnerDisco(client, retryDelay = {}).also { it.visitorData = "visitor" }
             var configReady = false
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -2022,7 +2022,7 @@ class InnerDiscoExtractorTest {
             val extractor =
                 InnerDiscoExtractor(
                     configParser = parser,
-                    cipherService = YouTubeCipherService(client),
+                    cipherService = DiscoCipherService(client),
                     innerDisco = innerDisco,
                     fallbackStrategy = fallback,
                     tokenProvider = tokenProvider,
@@ -2059,7 +2059,7 @@ class InnerDiscoExtractorTest {
                     }
                 }
             val parser =
-                object : YtConfigParser {
+                object : DiscoConfigParser {
                     override suspend fun fetchConfig(
                         videoId: String,
                         useLoginCookies: Boolean,
@@ -2121,7 +2121,7 @@ class InnerDiscoExtractorTest {
                 InnerDiscoExtractor(
                     CountingParser(),
                     PlayerClientDirector(innerDisco, fallback, tokenProvider),
-                    YouTubeCipherService(client),
+                    DiscoCipherService(client),
                     innerDisco,
                 )
 
@@ -2173,7 +2173,7 @@ class InnerDiscoExtractorTest {
                 InnerDiscoExtractor(
                     CountingParser(),
                     PlayerClientDirector(innerDisco, fallback, tokenProvider),
-                    YouTubeCipherService(client),
+                    DiscoCipherService(client),
                     innerDisco,
                 )
 
@@ -2199,9 +2199,9 @@ class InnerDiscoExtractorTest {
     private fun makeExtractor(
         client: HttpClient,
         innerDisco: InnerDisco,
-        parser: YtConfigParser,
+        parser: DiscoConfigParser,
         fallback: com.omarkarimli.innerdiscox.extraction.strategy.ClientFallbackStrategy = DirectFallback,
-        cipherService: ExtractionCipherService = YouTubeCipherService(client),
+        cipherService: ExtractionCipherService = DiscoCipherService(client),
         tvBearerProviderTimeoutMs: Long = 8_000,
         now: () -> Instant = { Clock.System.now() },
     ): InnerDiscoExtractor =
@@ -2227,7 +2227,7 @@ class InnerDiscoExtractorTest {
         private val playerUrl: String = "https://www.youtube.com/s/player/test/base.js",
         /** A real signed-out watch page issues a new visitor, which makes a refreshed config's player request differ. */
         private val freshVisitorPerFetch: Boolean = false,
-    ) : YtConfigParser {
+    ) : DiscoConfigParser {
         var calls = 0
 
         override suspend fun fetchConfig(
@@ -2241,11 +2241,11 @@ class InnerDiscoExtractorTest {
     }
 
     private object DirectFallback : com.omarkarimli.innerdiscox.extraction.strategy.ClientFallbackStrategy {
-        override fun resolveClients(hints: ContentHints) = listOf(YouTubeClient.VISIONOS)
+        override fun resolveClients(hints: ContentHints) = listOf(DiscoClient.VISIONOS)
     }
 
     private object WebRemixFallback : com.omarkarimli.innerdiscox.extraction.strategy.ClientFallbackStrategy {
-        override fun resolveClients(hints: ContentHints) = listOf(YouTubeClient.WEB_REMIX)
+        override fun resolveClients(hints: ContentHints) = listOf(DiscoClient.WEB_REMIX)
 
         // Like the catalog, keep the token-minting client out of the config-free fast path.
         override fun selectClients(request: com.omarkarimli.innerdiscox.extraction.strategy.ClientSelectionRequest) =
@@ -2258,7 +2258,7 @@ class InnerDiscoExtractorTest {
     }
 
     private object IosFallback : com.omarkarimli.innerdiscox.extraction.strategy.ClientFallbackStrategy {
-        override fun resolveClients(hints: ContentHints) = listOf(YouTubeClient.IOS)
+        override fun resolveClients(hints: ContentHints) = listOf(DiscoClient.IOS)
     }
 
     private object NoTokenProvider : TokenProvider {

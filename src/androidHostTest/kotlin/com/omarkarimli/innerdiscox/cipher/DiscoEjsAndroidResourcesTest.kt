@@ -7,13 +7,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class YtEjsAndroidResourcesTest {
+class DiscoEjsAndroidResourcesTest {
     @Test
     fun publishedAarContainsTheSolverScriptsUsedByFullSolveTests() {
         val expected =
             mapOf(
-                "yt_ejs/yt.solver.core.min.js" to "f59cd0c507ed083a8f115e3071703d2cd5ebbd74",
-                "yt_ejs/yt.solver.lib.min.js" to "fda1e5c634b4fa592983c7fdfd81d9a584b58571",
+                "disco_ejs/disco.solver.core.min.js" to "f59cd0c507ed083a8f115e3071703d2cd5ebbd74",
+                "disco_ejs/disco.solver.lib.min.js" to "b498f8d73c89a5b726d9d3d95856313fc2788fed",
             )
         val packaged = mutableMapOf<String, String>()
         ZipFile(assertNotNull(System.getProperty("innerdiscox.test.aar"))).use { aar ->
@@ -29,7 +29,7 @@ class YtEjsAndroidResourcesTest {
         }
         assertEquals(expected, packaged)
         for ((path, hash) in expected) {
-            assertEquals(hash, sha1(readYtEjsSolverScript(path.substringAfter('/'))))
+            assertEquals(hash, sha1(readDiscoEjsSolverScript(path.substringAfter('/'))))
         }
     }
 }

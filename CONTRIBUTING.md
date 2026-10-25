@@ -31,7 +31,7 @@ Run the complete local gate before opening a pull request:
 
 ## Changes
 
-- Keep the library independent from Disco application settings, models,
+- Keep the library independent of Disco application settings, models,
   databases, UI, and playback frameworks.
 - Add regression tests for protocol parsing, session handling, cipher changes,
   and SABR behavior.
@@ -49,7 +49,7 @@ Run the complete local gate before opening a pull request:
 ## Commit and Pull Request Scope
 
 Prefer focused changes with a clear reason. A pull request should describe the
-behavioral change, tests run, and any known interoperability risk with YouTube
+behavioral change, tests run, and any known interoperability risk with Disco
 clients or playback transports.
 
 By participating, you agree to follow [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

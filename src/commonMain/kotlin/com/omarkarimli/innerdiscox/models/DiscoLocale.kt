@@ -3,7 +3,7 @@ package com.omarkarimli.innerdiscox.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class YouTubeLocale(
+data class DiscoLocale(
     val gl: String,
     val hl: String,
 ) {

@@ -1,6 +1,6 @@
 package com.omarkarimli.innerdiscox
 
-import com.omarkarimli.innerdiscox.models.YouTubeClient
+import com.omarkarimli.innerdiscox.models.DiscoClient
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -36,7 +36,7 @@ class InnerDiscoRetryTest {
                     install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
                 }
 
-            val response = InnerDisco(client, retryDelay = {}).browse(YouTubeClient.WEB_REMIX, browseId = "test")
+            val response = InnerDisco(client, retryDelay = {}).browse(DiscoClient.WEB_REMIX, browseId = "test")
 
             assertEquals(HttpStatusCode.OK, response.status)
             assertEquals(3, requests)
@@ -60,7 +60,7 @@ class InnerDiscoRetryTest {
 
             val error =
                 assertFailsWith<InnerDiscoHttpException> {
-                    InnerDisco(client, retryDelay = {}).browse(YouTubeClient.WEB_REMIX, browseId = "test")
+                    InnerDisco(client, retryDelay = {}).browse(DiscoClient.WEB_REMIX, browseId = "test")
                 }
 
             assertEquals(HttpStatusCode.Unauthorized, error.status)
@@ -88,7 +88,7 @@ class InnerDiscoRetryTest {
                 }
 
             assertFailsWith<InnerDiscoHttpException> {
-                InnerDisco(client, retryDelay = { delays += it }).browse(YouTubeClient.WEB_REMIX, browseId = "test")
+                InnerDisco(client, retryDelay = { delays += it }).browse(DiscoClient.WEB_REMIX, browseId = "test")
             }
 
             assertEquals(2, requests)
@@ -111,7 +111,7 @@ class InnerDiscoRetryTest {
                     install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
                 }
 
-            val response = InnerDisco(client, retryDelay = {}).likeVideo(YouTubeClient.WEB_REMIX, "video")
+            val response = InnerDisco(client, retryDelay = {}).likeVideo(DiscoClient.WEB_REMIX, "video")
 
             assertEquals(HttpStatusCode.ServiceUnavailable, response.status)
             assertEquals(1, requests)
@@ -134,7 +134,7 @@ class InnerDiscoRetryTest {
                 }
 
             assertFailsWith<IllegalStateException> {
-                InnerDisco(client, retryDelay = {}).likeVideo(YouTubeClient.WEB_REMIX, "video")
+                InnerDisco(client, retryDelay = {}).likeVideo(DiscoClient.WEB_REMIX, "video")
             }
             assertEquals(1, requests)
             client.close()
@@ -151,7 +151,7 @@ class InnerDiscoRetryTest {
                         throw IllegalArgumentException("invalid request")
                     },
                 ) { install(ContentNegotiation) { json() } }
-            assertFailsWith<IllegalArgumentException> { InnerDisco(client, retryDelay = {}).browse(YouTubeClient.WEB) }
+            assertFailsWith<IllegalArgumentException> { InnerDisco(client, retryDelay = {}).browse(DiscoClient.WEB) }
             assertEquals(1, requests)
             client.close()
         }
@@ -171,7 +171,7 @@ class InnerDiscoRetryTest {
                         respond("{}", HttpStatusCode.OK, JSON_HEADERS)
                     },
                 ) { install(ContentNegotiation) { json() } }
-            assertEquals(HttpStatusCode.OK, InnerDisco(client, retryDelay = {}).browse(YouTubeClient.WEB).status)
+            assertEquals(HttpStatusCode.OK, InnerDisco(client, retryDelay = {}).browse(DiscoClient.WEB).status)
             assertEquals(2, requests)
             client.close()
         }
@@ -192,7 +192,7 @@ class InnerDiscoRetryTest {
                     install(ContentNegotiation) { json() }
                 }
             val innerDisco = InnerDisco(client, retryDelay = {}, logger = InnerDiscoLogger { messages += it.message })
-            assertFailsWith<InnerDiscoHttpException> { innerDisco.browse(YouTubeClient.WEB) }
+            assertFailsWith<InnerDiscoHttpException> { innerDisco.browse(DiscoClient.WEB) }
             assertEquals(2, requests)
             assertTrue(messages.none { "succeeded" in it })
             client.close()

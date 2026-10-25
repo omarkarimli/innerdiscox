@@ -2,11 +2,11 @@ package com.omarkarimli.innerdiscox.extraction
 
 import com.omarkarimli.innerdiscox.InnerDisco
 import com.omarkarimli.innerdiscox.InnerDiscoLogger
+import com.omarkarimli.innerdiscox.cipher.DiscoCipherService
 import com.omarkarimli.innerdiscox.cipher.RemotePlayerConfigStore
-import com.omarkarimli.innerdiscox.cipher.YouTubeCipherService
 import com.omarkarimli.innerdiscox.cipher.getTextWithoutRedirects
 import com.omarkarimli.innerdiscox.d
-import com.omarkarimli.innerdiscox.models.YouTubeClient
+import com.omarkarimli.innerdiscox.models.DiscoClient
 import com.omarkarimli.innerdiscox.w
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.timeout
@@ -18,14 +18,14 @@ import io.ktor.http.isSuccess
 import io.ktor.http.takeFrom
 import kotlinx.coroutines.CancellationException
 
-public class YtConfigParserImpl(
+public class DiscoConfigParserImpl(
     private val httpClient: HttpClient,
     private val innerDisco: InnerDisco,
     private val remotePlayerConfigStore: RemotePlayerConfigStore? = null,
     private val logger: InnerDiscoLogger = InnerDiscoLogger.NONE,
     /** When set, the signature-timestamp fallback reuses the cipher service's player download. */
-    private val cipherService: YouTubeCipherService? = null,
-) : YtConfigParser {
+    private val cipherService: DiscoCipherService? = null,
+) : DiscoConfigParser {
     override suspend fun fetchConfig(
         videoId: String,
         useLoginCookies: Boolean,
@@ -87,7 +87,7 @@ public class YtConfigParserImpl(
 
         suspend fun fetchHtml(requestCookie: String?) =
             getText(Url(pageUrl), PAGE_MAX_BYTES, hasConfig) {
-                header(HttpHeaders.UserAgent, YouTubeClient.USER_AGENT_WEB)
+                header(HttpHeaders.UserAgent, DiscoClient.USER_AGENT_WEB)
                 header(HttpHeaders.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
                 referer?.let { header("Referer", it) }
                 requestCookie?.let { header(HttpHeaders.Cookie, it) }
@@ -114,7 +114,7 @@ public class YtConfigParserImpl(
             }
         val playerUrl =
             extractPlayerUrl(html) ?: fetchIframePlayerUrl()
-                ?: error("Unable to parse YouTube player JavaScript URL")
+                ?: error("Unable to parse Disco player JavaScript URL")
         val sts = extractSignatureTimestamp(html)
         val resolvedSts = sts ?: remotePlayerConfigStore?.getSignatureTimestamp(playerUrl) ?: fetchPlayerSignatureTimestamp(playerUrl)
         val visitorData = extractVisitorData(html)
@@ -132,7 +132,7 @@ public class YtConfigParserImpl(
         try {
             val js =
                 cipherService?.playerCode(playerUrl) ?: getText(Url(playerUrl), PLAYER_JS_MAX_BYTES) {
-                    header(HttpHeaders.UserAgent, YouTubeClient.USER_AGENT_WEB)
+                    header(HttpHeaders.UserAgent, DiscoClient.USER_AGENT_WEB)
                     timeout {
                         requestTimeoutMillis = PLAYER_TIMEOUT_MS
                         connectTimeoutMillis = PLAYER_TIMEOUT_MS
@@ -151,7 +151,7 @@ public class YtConfigParserImpl(
         try {
             val api =
                 getText(Url("https://www.youtube.com/iframe_api"), IFRAME_MAX_BYTES) {
-                    header(HttpHeaders.UserAgent, YouTubeClient.USER_AGENT_WEB)
+                    header(HttpHeaders.UserAgent, DiscoClient.USER_AGENT_WEB)
                     timeout {
                         requestTimeoutMillis = PLAYER_TIMEOUT_MS
                         connectTimeoutMillis = PLAYER_TIMEOUT_MS
@@ -217,7 +217,7 @@ public class YtConfigParserImpl(
         runCatching { Url(value) }
             .getOrNull()
             ?.takeIf {
-                it.protocol.name == "https" && it.port == 443 && approvedYouTubeHost(it.host) && it.user == null && it.password == null &&
+                it.protocol.name == "https" && it.port == 443 && approvedDiscoHost(it.host) && it.user == null && it.password == null &&
                     PLAYER_PATH.matches(it.encodedPath)
             }?.toString()
 
@@ -236,17 +236,17 @@ public class YtConfigParserImpl(
                 response.headers[HttpHeaders.Location]
                     ?.takeIf { response.status.value in REDIRECT_STATUS_CODES && redirectCount < MAX_REDIRECTS }
                     ?.let { location -> runCatching { URLBuilder(currentUrl).takeFrom(location).build() }.getOrNull() }
-                    ?.takeIf(::approvedYouTubeUrl)
+                    ?.takeIf(::approvedDiscoUrl)
                     ?: error("HTTP ${response.status.value}")
             currentUrl = redirectUrl
         }
         error("Too many redirects")
     }
 
-    private fun approvedYouTubeUrl(url: Url): Boolean =
+    private fun approvedDiscoUrl(url: Url): Boolean =
         url.protocol.name == "https" &&
             url.port == 443 &&
-            approvedYouTubeHost(url.host) &&
+            approvedDiscoHost(url.host) &&
             url.user == null &&
             url.password == null &&
             (
@@ -256,11 +256,11 @@ public class YtConfigParserImpl(
                     PLAYER_PATH.matches(url.encodedPath)
             )
 
-    private fun approvedYouTubeHost(host: String): Boolean =
+    private fun approvedDiscoHost(host: String): Boolean =
         host == "youtube.com" || host.endsWith(".youtube.com") || host == "youtube-nocookie.com" || host.endsWith(".youtube-nocookie.com")
 
     private companion object {
-        private const val TAG = "YtConfigParser"
+        private const val TAG = "DiscoConfigParser"
         private const val PAGE_TIMEOUT_MS = 10_000L
         private const val PLAYER_TIMEOUT_MS = 8_000L
         private const val PAGE_MAX_BYTES = 4 * 1024 * 1024

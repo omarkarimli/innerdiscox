@@ -136,11 +136,11 @@ internal class Capture : Interceptor {
             headers["Content-Range"]?.let { value ->
                 put("Content-Range", value.takeIf { Regex("bytes [0-9]{1,12}-[0-9]{1,12}/[0-9]{1,12}").matches(it) } ?: "omitted")
             }
-            headers["X-Youtube-Client-Name"]?.takeIf { value -> CLIENTS.any { it.clientId == value } }?.let {
-                put("X-Youtube-Client-Name", it)
+            headers["X-Disco-Client-Name"]?.takeIf { value -> CLIENTS.any { it.clientId == value } }?.let {
+                put("X-Disco-Client-Name", it)
             }
-            headers["X-Youtube-Client-Version"]?.takeIf { value -> CLIENTS.any { it.clientVersion == value } }?.let {
-                put("X-Youtube-Client-Version", it)
+            headers["X-Disco-Client-Version"]?.takeIf { value -> CLIENTS.any { it.clientVersion == value } }?.let {
+                put("X-Disco-Client-Version", it)
             }
         }
 
@@ -266,8 +266,8 @@ internal fun safeEvent(event: InnerDiscoLogEvent): String {
                     "InnerDiscoExtractor",
                     "PlayerClientDirector",
                     "SabrAudioStream",
-                    "YtConfigParser",
-                    "YouTubeCipher",
+                    "DiscoConfigParser",
+                    "DiscoCipher",
                 )
         }
             ?: "other"

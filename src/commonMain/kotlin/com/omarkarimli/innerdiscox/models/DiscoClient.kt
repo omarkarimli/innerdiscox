@@ -9,7 +9,7 @@ enum class PoTokenBinding {
 }
 
 @Serializable
-data class YouTubeClient(
+data class DiscoClient(
     val clientName: String,
     val clientVersion: String,
     val clientId: String,
@@ -37,7 +37,7 @@ data class YouTubeClient(
     val skipPlayerResponseValidation: Boolean = false,
 ) {
     fun toContext(
-        locale: YouTubeLocale,
+        locale: DiscoLocale,
         visitorData: String?,
         dataSyncId: String?,
     ) = Context(
@@ -66,8 +66,8 @@ data class YouTubeClient(
     companion object {
         const val USER_AGENT_WEB = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0"
 
-        const val ORIGIN_YOUTUBE_MUSIC = "https://music.youtube.com"
-        const val REFERER_YOUTUBE_MUSIC = "$ORIGIN_YOUTUBE_MUSIC/"
+        const val ORIGIN_DISCO_MUSIC = "https://music.youtube.com"
+        const val REFERER_DISCO_MUSIC = "$ORIGIN_DISCO_MUSIC/"
 
         /*
          * In general:
@@ -81,11 +81,11 @@ data class YouTubeClient(
         // -------------------------------------------------------------------------
 
         /**
-         * Primary YouTube Music client. Also used for browse, search, and account APIs.
+         * Primary Disco Music client. Also used for browse, search, and account APIs.
          * Works for normal, explicit, and kids content when signed in.
          */
         val WEB_REMIX =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "WEB_REMIX",
                 clientVersion = "1.20260707.12.00",
                 clientId = "67", // lol
@@ -99,7 +99,7 @@ data class YouTubeClient(
          * Login-required creator client. Works for normal, explicit, and kids content.
          */
         val WEB_CREATOR =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "WEB_CREATOR",
                 clientVersion = "1.20260708.06.00",
                 clientId = "62",
@@ -111,7 +111,7 @@ data class YouTubeClient(
             )
 
         val TVHTML5 =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "TVHTML5",
                 clientVersion = "7.20260707.07.00",
                 clientId = "7",
@@ -134,7 +134,7 @@ data class YouTubeClient(
          * Clean Android sessions may stall, and current explicit and kids probes are rejected.
          */
         val VISIONOS =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "VISIONOS",
                 clientVersion = "1.02",
                 clientId = "101",
@@ -152,7 +152,7 @@ data class YouTubeClient(
             )
 
         val VISIONOS_0_1 =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "VISIONOS",
                 clientVersion = "0.1",
                 clientId = "101",
@@ -177,7 +177,7 @@ data class YouTubeClient(
          * Normal content only; explicit and kids fail.
          */
         val ANDROID_VR_1_65_10 =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "ANDROID_VR",
                 clientVersion = "1.65.10",
                 clientId = "28",
@@ -197,7 +197,7 @@ data class YouTubeClient(
             )
 
         val ANDROID_VR_NO_AUTH =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "ANDROID_VR",
                 clientVersion = "1.61.48",
                 clientId = "28",
@@ -216,7 +216,7 @@ data class YouTubeClient(
          * This client can only be used when logged out.
          */
         val ANDROID_VR_1_61_48 =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "ANDROID_VR",
                 clientVersion = "1.61.48",
                 clientId = "28",
@@ -245,7 +245,7 @@ data class YouTubeClient(
          * Keep as a fallback candidate even though yt-dlp currently defaults to 1.65.10.
          */
         val ANDROID_VR_1_43_32 =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "ANDROID_VR",
                 clientVersion = "1.43.32",
                 clientId = "28",
@@ -272,7 +272,7 @@ data class YouTubeClient(
          * Web-cipher TV client. The player token is visitor-bound and the media token is video-bound.
          */
         val TVHTML5_SIMPLY =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "TVHTML5_SIMPLY",
                 clientVersion = "1.0",
                 clientId = "75",
@@ -285,7 +285,7 @@ data class YouTubeClient(
             )
 
         val TVHTML5_SIMPLY_EMBEDDED_PLAYER =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "TVHTML5_SIMPLY_EMBEDDED_PLAYER",
                 clientVersion = "2.0",
                 clientId = "85",
@@ -307,7 +307,7 @@ data class YouTubeClient(
          * Player requests return UNPLAYABLE for normal and kids content.
          */
         val WEB =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "WEB",
                 clientVersion = "2.20260708.00.00",
                 clientId = "1",
@@ -328,7 +328,7 @@ data class YouTubeClient(
 
         /** Mobile web profile with ultralow formats. */
         val MWEB =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "MWEB",
                 clientVersion = "2.20260708.05.00",
                 clientId = "2",
@@ -344,7 +344,7 @@ data class YouTubeClient(
 
         /** Third-party iframe profile. Only embeddable content is expected to work. */
         val WEB_EMBEDDED_PLAYER =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "WEB_EMBEDDED_PLAYER",
                 clientVersion = "2.20260708.00.00",
                 clientId = "56",
@@ -357,7 +357,7 @@ data class YouTubeClient(
 
         /** Current native iOS profile. It needs an iOS PO-token provider when enforcement applies. */
         val IOS =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "IOS",
                 clientVersion = "21.26.4",
                 clientId = "5",
@@ -382,9 +382,9 @@ data class YouTubeClient(
                 friendlyName = "iPadOS",
             )
 
-        /** YouTube Kids web identity. Kept in inventory pending full playback validation. */
+        /** Disco Kids web identity. Kept in inventory pending full playback validation. */
         val WEB_KIDS =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "WEB_KIDS",
                 clientVersion = "2.20260205.00.00",
                 clientId = "76",
@@ -393,9 +393,9 @@ data class YouTubeClient(
                 useSignatureTimestamp = true,
             )
 
-        /** Native YouTube Music identity. Current playback generally needs platform attestation. */
+        /** Native Disco Music identity. Current playback generally needs platform attestation. */
         val ANDROID_MUSIC =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "ANDROID_MUSIC",
                 clientVersion = "5.34.51",
                 clientId = "21",
@@ -409,7 +409,7 @@ data class YouTubeClient(
 
         /** Native Studio identity retained as an experimental inventory/probe profile. */
         val ANDROID_CREATOR =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "ANDROID_CREATOR",
                 clientVersion = "25.03.101",
                 clientId = "14",
@@ -433,7 +433,7 @@ data class YouTubeClient(
 
         /** Current native Android identity. Platform attestation is described by the playback manifest. */
         val ANDROID =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "ANDROID",
                 clientVersion = "21.26.364",
                 clientId = "3",
@@ -514,7 +514,7 @@ data class YouTubeClient(
 
         /** Cookie-oriented fallback used by current yt-dlp defaults. */
         val TVHTML5_DOWNGRADED =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "TVHTML5",
                 clientVersion = "5.20260707",
                 clientId = "7",
@@ -527,7 +527,7 @@ data class YouTubeClient(
 
         /** Historical probe identity: iOS Music client ID 26, current source evidence only. */
         val IOS_MUSIC =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "IOS_MUSIC",
                 clientVersion = "7.27.0",
                 clientId = "26",
@@ -542,7 +542,7 @@ data class YouTubeClient(
 
         /** Historical probe identity: Android Kids client ID 18, current source evidence only. */
         val ANDROID_KIDS =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "ANDROID_KIDS",
                 clientVersion = "7.36.1",
                 clientId = "18",
@@ -555,7 +555,7 @@ data class YouTubeClient(
 
         /** Historical probe identity: Android Producer client ID 91, current source evidence only. */
         val ANDROID_PRODUCER =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "ANDROID_PRODUCER",
                 clientVersion = "0.111.1",
                 clientId = "91",
@@ -568,7 +568,7 @@ data class YouTubeClient(
 
         /** Historical probe identity: Media Connect Frontend client ID 95, current source evidence only. */
         val MEDIA_CONNECT_FRONTEND =
-            YouTubeClient(
+            DiscoClient(
                 clientName = "MEDIA_CONNECT_FRONTEND",
                 clientVersion = "0.1",
                 clientId = "95",

@@ -19,7 +19,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-// Accept only the YouTube media and manifest endpoints. Do not give remote playlists to FFmpeg.
+// Accept only the Disco media and manifest endpoints. Do not give remote playlists to FFmpeg.
 internal fun allowedHls(
     url: String,
     localFixture: Boolean = false,

@@ -9,7 +9,7 @@ internal data class UmpPart(
     override fun hashCode(): Int = 31 * type + data.contentHashCode()
 }
 
-/** Incremental reader for YouTube's UMP framing. */
+/** Incremental reader for Disco's UMP framing. */
 internal class UmpReader(
     private val maxPartSize: Int = DEFAULT_MAX_PART_SIZE,
     private val maxPartSizeForType: (Int) -> Int = { maxPartSize },
